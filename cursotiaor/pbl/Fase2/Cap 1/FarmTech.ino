@@ -68,14 +68,6 @@ int culturaAtual = CULTURA_BANANA;  // Trocar para CULTURA_MILHO se necessário
 #define PH_MAXIMO 7.5             // pH máximo adequado
 #define PH_IDEAL 6.5              // pH ideal
 
-// ======= Configuração do comportamento dos botões =======
-// Se 1: cada pressão INVERTE (toggle) o estado true/false (pressionar para alternar)
-// Se 0: comportamento antigo (manter pressionado = true)
-#define BUTTON_TOGGLE_MODE 1
-
-// Debounce para evitar múltiplas leituras por ruído mecânico (ms)
-#define DEBOUNCE_DELAY 50
-
 // ═══════════════════════════════════════════════════════════════════════════
 // TABELA DE DOSAGENS NPK (Baseado em dados científicos)
 // ═══════════════════════════════════════════════════════════════════════════
@@ -118,15 +110,6 @@ bool irrigacaoAutomatica = true;
 // Controle de tempo
 unsigned long ultimaLeitura = 0;
 int contadorLeituras = 0;
-
-// ======= Estado e debounce dos botões (para modo toggle) =======
-bool lastButtonNitrogenState = HIGH;
-bool lastButtonPhosphorusState = HIGH;
-bool lastButtonPotassiumState = HIGH;
-
-unsigned long lastDebounceTimeNitrogen = 0;
-unsigned long lastDebounceTimePhosphorus = 0;
-unsigned long lastDebounceTimePotassium = 0;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DECLARAÇÕES DE FUNÇÕES
@@ -232,56 +215,12 @@ void loop() {
 
 void lerSensores() {
   // ─────────────────────────────────────────────────────────────────────────
-  // 1. Leitura de NPK (Botões) - com opção de toggle e debounce
+  // 1. Leitura de NPK (Botões)
   // ─────────────────────────────────────────────────────────────────────────
   // Nota: INPUT_PULLUP inverte lógica (LOW = pressionado)
-  bool readingN = digitalRead(BTN_NITROGEN);
-  bool readingP = digitalRead(BTN_PHOSPHORUS);
-  bool readingK = digitalRead(BTN_POTASSIUM);
-
-  if (BUTTON_TOGGLE_MODE) {
-    unsigned long now = millis();
-
-    // Nitrogenio
-    if (readingN != lastButtonNitrogenState) {
-      lastDebounceTimeNitrogen = now;
-    }
-    if ((now - lastDebounceTimeNitrogen) > DEBOUNCE_DELAY) {
-      // Se o estado mudou para pressionado (LOW), alterna
-      if (readingN == LOW && lastButtonNitrogenState == HIGH) {
-        nitrogenioOK = !nitrogenioOK;
-      }
-    }
-    lastButtonNitrogenState = readingN;
-
-    // Fosforo
-    if (readingP != lastButtonPhosphorusState) {
-      lastDebounceTimePhosphorus = now;
-    }
-    if ((now - lastDebounceTimePhosphorus) > DEBOUNCE_DELAY) {
-      if (readingP == LOW && lastButtonPhosphorusState == HIGH) {
-        fosforoOK = !fosforoOK;
-      }
-    }
-    lastButtonPhosphorusState = readingP;
-
-    // Potassio
-    if (readingK != lastButtonPotassiumState) {
-      lastDebounceTimePotassium = now;
-    }
-    if ((now - lastDebounceTimePotassium) > DEBOUNCE_DELAY) {
-      if (readingK == LOW && lastButtonPotassiumState == HIGH) {
-        potassioOK = !potassioOK;
-      }
-    }
-    lastButtonPotassiumState = readingK;
-
-  } else {
-    // Comportamento antigo: manter pressionado = true
-    nitrogenioOK = !readingN;
-    fosforoOK = !readingP;
-    potassioOK = !readingK;
-  }
+  nitrogenioOK = !digitalRead(BTN_NITROGEN);
+  fosforoOK = !digitalRead(BTN_PHOSPHORUS);
+  potassioOK = !digitalRead(BTN_POTASSIUM);
   
   // ─────────────────────────────────────────────────────────────────────────
   // 2. Leitura de pH (LDR)
@@ -294,7 +233,7 @@ void lerSensores() {
   // Fórmula: pH = 9.0 - (ldrValue / 4095.0) * 6.0
   // Resultado: 0-4095 → pH 9.0-3.0
   phSolo = 9.0 - (ldrValue / 4095.0) * 6.0;
-  
+  Serial.println("LDR Value: " + String(ldrValue) + " → pH: " + String(phSolo, 1));
   // ─────────────────────────────────────────────────────────────────────────
   // 3. Leitura de Umidade e Temperatura (DHT22)
   // ─────────────────────────────────────────────────────────────────────────

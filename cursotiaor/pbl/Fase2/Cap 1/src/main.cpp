@@ -233,7 +233,7 @@ void lerSensores() {
   // Fórmula: pH = 9.0 - (ldrValue / 4095.0) * 6.0
   // Resultado: 0-4095 → pH 9.0-3.0
   phSolo = 9.0 - (ldrValue / 4095.0) * 6.0;
-  
+  Serial.println("LDR Value: " + String(ldrValue) + " → pH: " + String(phSolo, 1));
   // ─────────────────────────────────────────────────────────────────────────
   // 3. Leitura de Umidade e Temperatura (DHT22)
   // ─────────────────────────────────────────────────────────────────────────
