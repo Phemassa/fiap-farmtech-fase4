@@ -194,8 +194,8 @@ dados_cap7 <- data.frame(
                        ifelse(dados_conab$area_ha < 2500, "Media", "Grande"))
 )
 
-# Salvar no formato correto
-write.csv(dados_cap7, "dados_agronegocio_RM98765.csv", row.names = FALSE)
+# Salvar no formato correto - Grupo 19
+write.csv(dados_cap7, "dados_agronegocio_grupo19.csv", row.names = FALSE)
 ```
 
 ---

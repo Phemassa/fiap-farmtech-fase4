@@ -6,7 +6,11 @@
 **Disciplina:** Ciência de Dados  
 **Instituição:** FIAP  
 **Data:** 12/10/2025  
-**RM:** 98765 (AJUSTAR COM SEU RM REAL)
+
+**Grupo 19 - Integrantes:**
+- **RM566826:** Phellype Matheus Giacoia Flaibam Massarente
+- **RM567005:** Carlos Alberto Florindo Costato
+- **RM568140:** Cesar Martinho de Azeredo
 
 ---
 
@@ -20,8 +24,8 @@ Realizar análise estatística descritiva completa de dados reais do agronegóci
 
 ```
 Cap 7/
-├── analise_RM98765.R              # Script R com análise completa
-├── dados_agronegocio_RM98765.csv  # Base de dados (30+ linhas)
+├── analise_grupo19.R              # Script R com análise completa (Grupo 19)
+├── dados_agronegocio_grupo19.csv  # Base de dados (35 linhas)
 ├── README.md                      # Este arquivo
 ├── graficos/                      # Gráficos gerados (automático)
 └── docs/                          # Documentação adicional
@@ -132,7 +136,7 @@ Cap 7/
    ```
 
 2. **Abrir o script:**
-   - File → Open File → `analise_RM98765.R`
+   - File → Open File → `analise_grupo19.R`
 
 3. **Executar o script completo:**
    - Pressione `Ctrl + Shift + Enter` (Windows/Linux)
@@ -143,7 +147,7 @@ Cap 7/
 
 ```bash
 cd "C:\Fiap Projeto\Fase2\cursotiaor\pbl\Fase2\Cap 7"
-Rscript analise_RM98765.R
+Rscript analise_grupo19.R
 ```
 
 ### Execução Passo a Passo
@@ -262,12 +266,12 @@ Os valores simulados refletem:
 
 ### Alterar para seus dados
 
-1. **Trocar RM:**
-   - Renomear arquivos: `RM98765` → `RM[SEU_RM]`
-   - Linha 1 do script R: Alterar nome completo e RM
+1. **Identificação do Grupo:**
+   - ✅ Arquivos já nomeados como `grupo19` (RM566826, RM567005, RM568140)
+   - ✅ Cabeçalho do script R contém os 3 integrantes do Grupo 19
 
 2. **Usar seus próprios dados:**
-   - Substituir `dados_agronegocio_RM98765.csv`
+   - Substituir `dados_agronegocio_grupo19.csv`
    - Manter estrutura de 4 colunas com mesmos tipos
    - Ajustar nomes das colunas no script se necessário
 
@@ -293,14 +297,14 @@ Os valores simulados refletem:
 
 ### Quartis
 - **Q1 (25%):** 25% dos dados abaixo deste valor
-- **Q2 (50%):** Mediana - 50% abaixo e 50% acima
+- **Q2 (50%):** Mediana - 50% dos dados abaixo e 50% acima
 - **Q3 (75%):** 75% dos dados abaixo deste valor
 
 ---
 
 ## 🐛 Solução de Problemas
 
-### Erro: "cannot open file 'dados_agronegocio_RM98765.csv'"
+### Erro: "cannot open file 'dados_agronegocio_grupo19.csv'"
 
 **Solução:**
 ```r

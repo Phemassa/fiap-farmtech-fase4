@@ -6,6 +6,11 @@
 **Prazo FIAP:** 15/10/2025  
 **Status:** ✅ 100% CONCLUÍDO
 
+**Grupo 19 - Integrantes:**
+- **RM566826:** Phellype Matheus Giacoia Flaibam Massarente
+- **RM567005:** Carlos Alberto Florindo Costato
+- **RM568140:** Cesar Martinho de Azeredo
+
 ---
 
 ## 📦 Arquivos Criados
@@ -14,8 +19,8 @@
 
 | Arquivo | Tamanho | Descrição | Status |
 |---------|---------|-----------|--------|
-| **analise_RM98765.R** | ~13 KB | Script R com análise completa | ✅ Pronto |
-| **dados_agronegocio_RM98765.csv** | ~1 KB | Base de dados (35 linhas × 4 colunas) | ✅ Pronto |
+| **analise_grupo19.R** | ~13 KB | Script R com análise completa (Grupo 19) | ✅ Pronto |
+| **dados_agronegocio_grupo19.csv** | ~1 KB | Base de dados (35 linhas × 4 colunas) | ✅ Pronto |
 
 ### 📚 Documentação (RECOMENDADA)
 
@@ -84,7 +89,8 @@
 - [x] Histograma ✅
 
 #### 6. Identificação (100%)
-- [x] Primeira linha: `# Phellype_Massa_RM98765_fase2_cap7` ✅
+- [x] Cabeçalho completo com Grupo 19 (3 integrantes) ✅
+- [x] RM566826, RM567005, RM568140 identificados ✅
 - [x] Comentários no código ✅
 - [x] Estrutura organizada ✅
 
@@ -156,7 +162,7 @@
 
 4. **Executar:**
    ```r
-   source("analise_RM98765.R")
+   source("analise_grupo19.R")
    ```
 
 5. **Visualizar:**
@@ -171,27 +177,24 @@
 
 ---
 
-## 📝 Personalização Necessária
+## 📝 Identificação do Grupo
 
-### ANTES DE ENTREGAR NA FIAP:
+### ✅ GRUPO 19 JÁ IDENTIFICADO:
 
-1. **Trocar RM e Nome:**
-   - Arquivo: `analise_RM98765.R`
-   - Linha 1: Alterar para seu nome completo e RM real
+1. **Arquivo principal:**
+   - ✅ `analise_grupo19.R` - Script R com análise completa
+   - ✅ Cabeçalho completo com os 3 integrantes do Grupo 19
+
+2. **Arquivo de dados:**
+   - ✅ `dados_agronegocio_grupo19.csv` - Base de dados
+   
+3. **Integrantes identificados no cabeçalho:**
    ```r
-   # SeuNomeCompleto_SEURM_fase2_cap7
+   # GRUPO 19 FIAP - 1º ano • 2025/2
+   # - RM566826: Phellype Matheus Giacoia Flaibam Massarente
+   # - RM567005: Carlos Alberto Florindo Costato
+   # - RM568140: Cesar Martinho de Azeredo
    ```
-
-2. **Renomear arquivos:**
-   ```
-   analise_RM98765.R → analise_RM[SEURM].R
-   dados_agronegocio_RM98765.csv → dados_agronegocio_RM[SEURM].csv
-   ```
-
-3. **Atualizar caminho no script (se necessário):**
-   ```r
-   # Linha ~18
-   dados <- read.csv("dados_agronegocio_RM[SEURM].csv", ...)
    ```
 
 ---
@@ -247,12 +250,12 @@
 
 ## 📚 Arquitetura do Código
 
-### Estrutura do Script R (527 linhas)
+### Estrutura do Script R (436 linhas)
 
 ```
-analise_RM98765.R
+analise_grupo19.R
 ├── 1. CONFIGURAÇÃO INICIAL (linhas 1-30)
-│   ├── Identificação
+│   ├── Identificação Grupo 19 (3 integrantes)
 │   ├── Limpeza ambiente
 │   ├── Carregamento de dados
 │   └── Resumo inicial
@@ -329,7 +332,7 @@ analise_RM98765.R
 ## 🚨 Erros Comuns a Evitar
 
 ### ❌ NÃO FAÇA:
-1. Esquecer de trocar RM98765 pelo seu RM real
+1. Alterar identificação do Grupo 19 (já está correta!)
 2. Executar sem definir diretório (`setwd()`)
 3. Alterar estrutura do CSV (manter 4 colunas)
 4. Remover comentários do código
@@ -339,7 +342,7 @@ analise_RM98765.R
 1. Teste o script completo antes de entregar
 2. Verifique se 8 gráficos são gerados
 3. Confirme resultados no console
-4. Mantenha identificação na linha 1
+4. Mantenha identificação do Grupo 19 no cabeçalho
 5. Entregue arquivos .R e .csv
 
 ---
@@ -384,14 +387,19 @@ Você agora tem uma **análise estatística profissional** pronta para entrega!
 
 ### 🎯 Próximos Passos:
 
-1. ✅ Cap 7 - Análise R (COMPLETO)
-2. ⏳ Cap 1 - README.md (URGENTE)
+1. ✅ Cap 7 - Análise R (COMPLETO - Grupo 19)
+2. ✅ Cap 1 - ESP32 v2.0 + Opcionais (COMPLETO)
 3. ⏳ Vídeo YouTube (roteiro pronto)
-4. ⏳ Screenshots Wokwi (2 imagens)
+4. ✅ Screenshots Wokwi (2 imagens commitadas)
 
 ---
 
-**FarmTech Solutions - Grupo 59 FIAP**  
-**Phellype Massa - RM98765**  
+**FarmTech Solutions - Grupo 19 FIAP - 1º ano • 2025/2**  
+
+**Integrantes:**
+- **RM566826:** Phellype Matheus Giacoia Flaibam Massarente
+- **RM567005:** Carlos Alberto Florindo Costato
+- **RM568140:** Cesar Martinho de Azeredo
+
 **Data:** 12/10/2025  
 **Status:** ✅ CAP 7 COMPLETO E PRONTO PARA ENTREGA!
