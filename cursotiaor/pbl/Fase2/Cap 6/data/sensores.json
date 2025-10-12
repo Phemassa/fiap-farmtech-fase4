@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "cultivo_id": 1,
+    "timestamp": "2025-10-12 08:59:25",
+    "temperatura": 32.0,
+    "temp_status": "ALTA",
+    "umidade_ar": 50.0,
+    "umidade_solo": 40.0,
+    "ph": 5.8,
+    "ph_status": "NEUTRO",
+    "npk_ok": {
+      "N": false,
+      "P": true,
+      "K": true
+    }
+  }
+]

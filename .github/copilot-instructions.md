@@ -8,9 +8,26 @@ This is a **FIAP academic project** for an IoT-based smart irrigation system tar
 ### Hardware Simulation (Wokwi.com)
 - **ESP32 DevKit v1**: Main microcontroller
 - **NPK Sensors**: 3 green buttons (GPIO 2, 4, 5) simulating Nitrogen, Phosphorus, Potassium levels
-- **pH Sensor**: LDR on analog pin A0 (GPIO 34) with mathematical conversion (pH = 9.0 - (ldrValue/4095.0) * 6.0)
+- **pH Sensor**: LDR on analog pin A0 (GPIO 34) with **realistic NPK-pH interaction** (see below)
 - **Soil Moisture**: DHT22 on GPIO 21 (simulates soil humidity via air humidity * 0.8)
 - **Irrigation Control**: Relay module on GPIO 18 controlling water pump
+
+### NPK-pH Chemical Interaction (v2.0 - Updated 12/10/2025)
+**Key Innovation**: Pressing NPK buttons now **automatically adjusts pH** (realistic chemistry):
+```cpp
+// pH Base from LDR
+float pHBase = 9.0 - (ldrValue/4095.0) * 6.0;  // 3.0-9.0
+
+// NPK Adjustments (EMBRAPA data)
+float ajustePH = 0.0;
+if (nitrogenioOK) ajustePH -= 0.4;  // N acidifies
+if (fosforoOK)    ajustePH -= 0.3;  // P acidifies
+if (potassioOK)   ajustePH += 0.1;  // K alkalizes
+
+// Final pH
+phSolo = constrain(pHBase + ajustePH, 3.0, 9.0);
+```
+**Documentation**: See `docs/RELACAO_NPK_PH.md` for scientific foundation
 
 ### Project Structure
 ```

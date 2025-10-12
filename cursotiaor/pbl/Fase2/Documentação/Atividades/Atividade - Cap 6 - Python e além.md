@@ -200,9 +200,31 @@ O grupo é **livre para escolher** qualquer área do agronegócio, desde que:
 [Como a solução resolve o problema]
 
 ## Tecnologias Utilizadas
-- Python (Capítulos 3-6)
-- Oracle Database
-- [Outras tecnologias]
+
+### Core (Obrigatórias)
+- **Python 3.8+** - Linguagem principal (Caps 3-6)
+- **JSON** - Persistência de dados (Cap 5)
+- **Estruturas de Dados** - Lists, Tuples, Dicts (Cap 4)
+- **Funções/Procedimentos** - Modularização (Cap 3)
+
+### Persistência (Implementadas)
+- **Arquivos JSON** - 4 arquivos (cultivos, sensores, irrigacoes, estoque)
+- **Arquivos Texto** - Logs de operações
+- **Oracle Database** - Integração opcional via cx_Oracle (Cap 6)
+
+### Bibliotecas Python
+- **json** (built-in) - Manipulação JSON
+- **datetime** (built-in) - Controle de datas
+- **statistics** (built-in) - Cálculos estatísticos
+- **cx_Oracle 8.3.0** (opcional) - Conexão Oracle
+- **pyserial 3.5** (opcional) - Integração ESP32
+
+### Banco de Dados
+- **Oracle Database** - Scripts SQL completos fornecidos
+  - ✅ `sql/create_tables.sql` - DDL (4 tabelas + sequences + views)
+  - ✅ `sql/seed_data.sql` - Dados de exemplo
+  - ⚠️ **Nota**: Sistema funciona 100% **sem Oracle instalado** (usa JSON)
+  - 💡 **Opcional**: Instale cx_Oracle para sincronização com Oracle
 
 ## Como Executar
 [Instruções passo a passo]

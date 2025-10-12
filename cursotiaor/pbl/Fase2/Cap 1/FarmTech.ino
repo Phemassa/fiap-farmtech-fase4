@@ -102,6 +102,7 @@ float temperaturaAr = 0.0;
 float umidadeSolo = 0.0;        // DHT22 simula umidade do solo
 float phSolo = 0.0;             // Calculado a partir do LDR
 int ldrValue = 0;
+float ldrLux = 0.0;             // Valor em LUX calculado do LDR
 
 // Estado da irrigação
 bool releLigado = false;
@@ -227,13 +228,90 @@ void lerSensores() {
   // ─────────────────────────────────────────────────────────────────────────
   ldrValue = analogRead(LDR_PIN);
   
-  // Conversão LDR → pH (0-4095 para ESP32 ADC 12-bit)
+  // Conversão ADC → LUX (aproximação calibrada para Wokwi)
+  // Wokwi LDR: 10 lux → ADC ~50, 100000 lux → ADC ~3500 (não chega em 4095)
+  // Fórmula calibrada baseada em testes no Wokwi:
+  // - ADC 0-50: 0-100 lux (muito escuro)
+  // - ADC 50-1500: 100-5000 lux (normal)
+  // - ADC 1500-3500: 5000-100000 lux (muito claro)
+  // Fórmula exponencial simplificada:
+  if (ldrValue < 50) {
+    ldrLux = ldrValue * 2.0;  // 0-100 lux
+  } else {
+    // Fórmula exponencial: lux = 10^(ADC/1000)
+    float normalizado = ldrValue / 4095.0;
+    ldrLux = pow(10, normalizado * 5.0);  // 10^0 a 10^5 = 1 a 100000 lux
+  }
+  
+  // Conversão LDR → pH Base (0-4095 para ESP32 ADC 12-bit)
   // LDR baixo (escuro) = pH alto (alcalino)
   // LDR alto (claro) = pH baixo (ácido)
-  // Fórmula: pH = 9.0 - (ldrValue / 4095.0) * 6.0
+  // Fórmula Base: pH = 9.0 - (ldrValue / 4095.0) * 6.0
   // Resultado: 0-4095 → pH 9.0-3.0
-  phSolo = 9.0 - (ldrValue / 4095.0) * 6.0;
-  Serial.println("LDR Value: " + String(ldrValue) + " → pH: " + String(phSolo, 1));
+  float pHBase = 9.0 - (ldrValue / 4095.0) * 6.0;
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // 🧪 AJUSTE DE pH BASEADO EM NPK (Realismo Químico)
+  // ─────────────────────────────────────────────────────────────────────────
+  // Fundamento científico (EMBRAPA):
+  // - Nitrogênio amoniacal (NH₄⁺): Acidifica -0.3 a -0.5
+  // - Fósforo (H₂PO₄⁻): Acidifica -0.2 a -0.4
+  // - Potássio (K⁺): Neutro/leve alcalinização +0.1
+  // ─────────────────────────────────────────────────────────────────────────
+  float ajustePH = 0.0;
+  
+  if (nitrogenioOK) {
+    ajustePH -= 0.4;  // Nitrogênio acidifica
+  }
+  if (fosforoOK) {
+    ajustePH -= 0.3;  // Fósforo acidifica
+  }
+  if (potassioOK) {
+    ajustePH += 0.1;  // Potássio alcaliniza levemente
+  }
+  
+  // pH Final = pH Base (LDR) + Ajustes (NPK)
+  phSolo = pHBase + ajustePH;
+  
+  // Limita pH entre 3.0 e 9.0 (faixa realista de solo agrícola)
+  phSolo = constrain(phSolo, 3.0, 9.0);
+  
+  // Display detalhado (debug)
+  Serial.println("\n📊 [SENSOR LDR/pH]");
+  Serial.print("   💡 Luminosidade: ");
+  Serial.print(ldrLux, 0);
+  Serial.println(" lux");
+  Serial.print("   📈 ADC Value: ");
+  Serial.print(ldrValue);
+  Serial.print(" / 4095");
+  
+  // Exibe cálculo de pH com ajustes NPK
+  Serial.print("   🧪 pH Base (LDR): ");
+  Serial.println(pHBase, 2);
+  
+  if (ajustePH != 0.0) {
+    Serial.print("   ⚗️  Ajuste NPK: ");
+    if (ajustePH > 0) Serial.print("+");
+    Serial.print(ajustePH, 2);
+    Serial.print(" (");
+    if (nitrogenioOK) Serial.print("N↓ ");
+    if (fosforoOK) Serial.print("P↓ ");
+    if (potassioOK) Serial.print("K↑");
+    Serial.println(")");
+  }
+  
+  Serial.print("   🎯 pH Final: ");
+  Serial.print(phSolo, 2);
+  
+  // Classificação do pH
+  if (phSolo < PH_MINIMO) {
+    Serial.println(" → 🟥 ÁCIDO");
+  } else if (phSolo > PH_MAXIMO) {
+    Serial.println(" → 🟦 ALCALINO");
+  } else {
+    Serial.println(" → 🟩 NEUTRO (IDEAL)");
+  }
+  Serial.println();
   // ─────────────────────────────────────────────────────────────────────────
   // 3. Leitura de Umidade e Temperatura (DHT22)
   // ─────────────────────────────────────────────────────────────────────────
@@ -426,7 +504,10 @@ void exibirStatus() {
   // pH do Solo
   // ─────────────────────────────────────────────────────────────────────────
   Serial.println("\n🧪 pH do Solo:");
-  Serial.print("   📊 LDR Value: ");
+  Serial.print("   � Luminosidade: ");
+  Serial.print(ldrLux, 0);
+  Serial.println(" lux");
+  Serial.print("   �📊 LDR Value: ");
   Serial.print(ldrValue);
   Serial.print(" → pH ");
   Serial.println(phSolo, 1);
