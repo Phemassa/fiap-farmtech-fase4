@@ -19,7 +19,7 @@
 
 | Arquivo | Tamanho | Descrição | Status |
 |---------|---------|-----------|--------|
-| **analise_grupo19.R** | ~13 KB | Script R com análise completa (Grupo 19) | ✅ Pronto |
+| **analise_R_grupo19.R** | ~13 KB | Script R com análise completa (Grupo 19) | ✅ Pronto |
 | **dados_agronegocio_grupo19.csv** | ~1 KB | Base de dados (35 linhas × 4 colunas) | ✅ Pronto |
 
 ### 📚 Documentação (RECOMENDADA)
@@ -162,7 +162,7 @@
 
 4. **Executar:**
    ```r
-   source("analise_grupo19.R")
+   source("analise_R_grupo19.R")
    ```
 
 5. **Visualizar:**
@@ -182,7 +182,7 @@
 ### ✅ GRUPO 19 JÁ IDENTIFICADO:
 
 1. **Arquivo principal:**
-   - ✅ `analise_grupo19.R` - Script R com análise completa
+   - ✅ `analise_R_grupo19.R` - Script R com análise completa
    - ✅ Cabeçalho completo com os 3 integrantes do Grupo 19
 
 2. **Arquivo de dados:**
@@ -253,7 +253,7 @@
 ### Estrutura do Script R (436 linhas)
 
 ```
-analise_grupo19.R
+analise_R_grupo19.R
 ├── 1. CONFIGURAÇÃO INICIAL (linhas 1-30)
 │   ├── Identificação Grupo 19 (3 integrantes)
 │   ├── Limpeza ambiente

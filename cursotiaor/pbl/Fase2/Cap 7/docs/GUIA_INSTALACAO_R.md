@@ -90,7 +90,7 @@ mean(c(1, 2, 3, 4, 5))
 #### Passo 2: Abrir o script
 1. Menu: **File → Open File...**
 2. Navegue até: `C:\Fiap Projeto\Fase2\cursotiaor\pbl\Fase2\Cap 7\`
-3. Selecione: `analise_grupo19.R`
+3. Selecione: `analise_R_grupo19.R`
 4. Clique em **"Abrir"**
 
 #### Passo 3: Definir diretório de trabalho

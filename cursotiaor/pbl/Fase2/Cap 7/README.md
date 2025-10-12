@@ -24,7 +24,7 @@ Realizar análise estatística descritiva completa de dados reais do agronegóci
 
 ```
 Cap 7/
-├── analise_grupo19.R              # Script R com análise completa (Grupo 19)
+├── analise_R_grupo19.R            # Script R com análise completa (Grupo 19)
 ├── dados_agronegocio_grupo19.csv  # Base de dados (35 linhas)
 ├── README.md                      # Este arquivo
 ├── graficos/                      # Gráficos gerados (automático)
@@ -136,7 +136,7 @@ Cap 7/
    ```
 
 2. **Abrir o script:**
-   - File → Open File → `analise_grupo19.R`
+   - File → Open File → `analise_R_grupo19.R`
 
 3. **Executar o script completo:**
    - Pressione `Ctrl + Shift + Enter` (Windows/Linux)
@@ -147,7 +147,7 @@ Cap 7/
 
 ```bash
 cd "C:\Fiap Projeto\Fase2\cursotiaor\pbl\Fase2\Cap 7"
-Rscript analise_grupo19.R
+Rscript analise_R_grupo19.R
 ```
 
 ### Execução Passo a Passo
