@@ -1,102 +1,150 @@
 # 📸 Screenshots do Circuito Wokwi
 
-Este diretório contém as capturas de tela do simulador Wokwi.com demonstrando o funcionamento do Sistema de Irrigação Inteligente FarmTech.
+Este diretório contém as capturas de tela do simulador Wokwi.com demonstrando o funcionamento do **Sistema de Irrigação Inteligente FarmTech v2.0** com a funcionalidade **NPK-pH**.
+
+---
 
 ## 📋 Imagens Disponíveis
 
-### 1. `wokwi-circuito-completo-ldr.png`
-**Descrição:** Circuito completo mostrando configuração do LDR (Photoresistor)
-- ✅ ESP32 DevKit v1 centralizado
-- ✅ LED de status (azul) conectado ao GPIO
-- ✅ 3 Botões verdes (N, P, K) para NPK
-  - N = Nitrogênio (GPIO 2)
-  - P = Fósforo (GPIO 4)
-  - K = Potássio (GPIO 5)
-- ✅ LDR (Photoresistor) simulando sensor de pH
-  - Painel de controle mostrando "ILLUMINATION (LUX): 500 lux"
-- ✅ DHT22 (sensor temperatura/umidade) à direita
-- ✅ Relé (Module) vermelho/azul à direita inferior
-- ✅ Tempo de simulação: 00:08.558
+### 1. `circuito_wokwi.png` ✅
+**Descrição:** Circuito completo do sistema de irrigação inteligente
+
+**Componentes Visíveis:**
+- ⚙️ **ESP32 DevKit v1** - Microcontrolador central
+- 🟢 **3 Botões NPK:**
+  - **N - Nitrogênio** (GPIO 2) - Primeiro botão verde
+  - **P - Fósforo** (GPIO 4) - Segundo botão verde (meio)
+  - **K - Potássio** (GPIO 5) - Terceiro botão verde (inferior)
+- 💡 **LDR (Photoresistor)** - Simula sensor de pH do solo
+  - Conectado ao GPIO 34 (ADC)
+  - Painel mostra luminosidade (lux) simulando faixa de pH
+- 🌡️ **DHT22** - Sensor de temperatura e umidade
+  - GPIO 21 (direita do circuito)
+  - Simula condições climáticas
+- 🔌 **Relé Módulo** - Controle da bomba de irrigação
+  - GPIO 18 (controle IN)
+  - LED indicador de status
+  - Vermelho/Azul (direita inferior)
+- 🔵 **LED Status** - Indicador visual do sistema
+  - Conectado ao topo do circuito
 
 **Características Técnicas:**
-- LDR conectado via resistor ao ESP32
-- Fios coloridos: Azul (VCC), Preto (GND), Verde (sinais NPK), Laranja (Relé), Azul pontilhado (DHT22)
+- **Fios Azuis:** VCC (alimentação 3.3V/5V)
+- **Fios Pretos:** GND (terra)
+- **Fios Verdes:** Sinais digitais dos botões NPK
+- **Fios Laranja:** Sinal de controle do relé
+- **Fios Vermelhos:** Alimentação do relé
+
+**Tempo de Simulação Visível:** ~865 ms (00:00.865)
 
 ---
 
-### 2. `wokwi-circuito-completo-dht22.png`
-**Descrição:** Circuito completo mostrando configuração do DHT22
-- ✅ Mesmo layout do circuito anterior
-- ✅ Painel de controle do DHT22 aberto
-  - Temperature: 24.0°C (ajustável via slider)
-  - Humidity: 40.0% (ajustável via slider)
-- ✅ DHT22 destacado com borda pontilhada
-- ✅ Tempo de simulação: 00:40.617
+### 2. `serial_monitor_npk_ph.png` ✅
+**Descrição:** Terminal/Serial Monitor mostrando leituras NPK e decisão de irrigação
 
-**Características Técnicas:**
-- DHT22 conectado ao GPIO 21 (conforme código)
-- Valores simulados ajustáveis em tempo real
-- Umidade do ar = base para cálculo de umidade do solo (× 0.8)
+**Dados Exibidos:**
+- 🧪 **NPK - Níveis de Nutrientes:**
+  - ✅ **Nitrogênio (N):** OK (botão pressionado na imagem)
+  - ❌ **Fósforo (P):** BAIXO
+  - ❌ **Potássio (K):** BAIXO [crítico p/ banana]
+
+**Funcionalidade NPK-pH v2.0:**
+Esta imagem demonstra a **inovação principal** do projeto:
+- Quando botões NPK são pressionados, o **pH é automaticamente ajustado**
+- **Nitrogênio (N):** -0.4 pH (acidifica)
+- **Fósforo (P):** -0.3 pH (acidifica)
+- **Potássio (K):** +0.1 pH (alcaliniza levemente)
+- **pH Final = pH Base (LDR) + Σ Ajustes NPK**
+
+**Estado do Sistema:**
+- 📊 Leituras de sensores em tempo real
+- 💧 Decisão de irrigação baseada nas 6 condições hierárquicas
+- 🌾 Cultura selecionada: Banana ou Milho
+- ⚗️ pH calculado dinamicamente com base em NPK
+
+**Informação Técnica:**
+- **LEITURA #17** - Contador de ciclos (incrementa a cada 5 segundos)
+- **~865 ms** - Tempo decorrido de simulação
 
 ---
 
-## 🔌 Mapa de Conexões Visualizado
+## 🔌 Mapa de Conexões Físicas
 
-Com base nas imagens, as conexões são:
+Com base no `circuito_wokwi.png`, as conexões são:
 
-| Componente | Pino ESP32 | Cor do Fio | Observação |
-|------------|-----------|------------|------------|
-| **LED Status** | GPIO (não especificado) | Azul | Indicador visual |
-| **Botão N (Nitrogênio)** | GPIO 2 | Verde | Pull-up interno |
-| **Botão P (Fósforo)** | GPIO 4 | Verde | Pull-up interno |
-| **Botão K (Potássio)** | GPIO 5 | Verde | Pull-up interno |
-| **LDR (pH)** | GPIO 34 (A0) | Conexão analógica | ADC 12-bit (0-4095) |
-| **DHT22 Data** | GPIO 21 | Azul pontilhado | Temp + Umidade |
-| **Relé IN** | GPIO 18 | Laranja | Controle bomba |
-| **Relé VCC** | 3.3V/5V | Vermelho | Alimentação |
-| **Relé GND** | GND | Preto | Terra |
+| Componente | Pino ESP32 | Tipo | Função |
+|------------|-----------|------|--------|
+| **LED Status** | Topo do circuito | Digital Output | Indicador visual de operação |
+| **Botão N (Nitrogênio)** | GPIO 2 | Digital Input (Pull-up) | Sensor NPK - Nitrogênio |
+| **Botão P (Fósforo)** | GPIO 4 | Digital Input (Pull-up) | Sensor NPK - Fósforo |
+| **Botão K (Potássio)** | GPIO 5 | Digital Input (Pull-up) | Sensor NPK - Potássio |
+| **LDR (pH Sensor)** | GPIO 34 (A0) | Analog Input (ADC 12-bit) | Simula pH do solo (3.0-9.0) |
+| **DHT22 Data** | GPIO 21 | Digital (OneWire) | Temperatura + Umidade |
+| **DHT22 VCC** | 3.3V | Power | Alimentação sensor |
+| **DHT22 GND** | GND | Ground | Terra sensor |
+| **Relé IN (Signal)** | GPIO 18 | Digital Output | Controle liga/desliga bomba |
+| **Relé VCC** | 5V | Power | Alimentação relé |
+| **Relé GND** | GND | Ground | Terra relé |
 
 ---
 
 ## 🎯 Como Usar Estas Imagens
 
-### Para o README.md Principal:
+### No README.md Principal:
 ```markdown
-## 📸 Circuito Wokwi
+## 📸 Screenshots
 
-### Visão Geral do Circuito
-![Circuito Completo - LDR](docs/images/wokwi-circuito-completo-ldr.png)
-*Circuito mostrando sensor LDR (pH) configurado em 500 lux*
+### Circuito Wokwi Completo
+![Circuito Wokwi](docs/images/circuito_wokwi.png)
+*ESP32 + 3 botões NPK + LDR (pH) + DHT22 + Relé*
 
-### Configuração DHT22
-![Circuito Completo - DHT22](docs/images/wokwi-circuito-completo-dht22.png)
-*DHT22 configurado: 24°C e 40% umidade (simulando solo a 32%)*
+### Serial Monitor - NPK e pH v2.0
+![Serial Monitor NPK-pH](docs/images/serial_monitor_npk_ph.png)
+*Terminal mostrando Nitrogênio OK, Fósforo e Potássio baixos, com decisão de irrigação*
 ```
 
----
-
-## 📝 Instruções para Adicionar Mais Screenshots
-
-Se precisar adicionar novas imagens:
-
-1. **Tire screenshot no Wokwi:**
-   - Print da tela inteira (incluindo controles)
-   - Print do Serial Monitor com saídas
-   - Print mostrando relé ligado/desligado
-
-2. **Nomeie adequadamente:**
-   - `wokwi-serial-monitor-irrigacao-ligada.png`
-   - `wokwi-serial-monitor-status-completo.png`
-   - `wokwi-rele-ativo.png`
-
-3. **Salve neste diretório:**
-   - `c:\Fiap Projeto\Fase2\cursotiaor\pbl\Fase2\Cap 1\docs\images\`
-
-4. **Documente aqui:**
-   - Adicione descrição similar às acima
-   - Inclua tempo de simulação e valores dos sensores
+### Em Apresentações:
+- Use `circuito_wokwi.png` para explicar **arquitetura do sistema**
+- Use `serial_monitor_npk_ph.png` para demonstrar **lógica de decisão**
 
 ---
+
+## 📝 Informações Adicionais
+
+### Arquivos Relacionados:
+- **COMO_SALVAR_IMAGENS.md** - Guia de como tirar screenshots no Wokwi
+- **GUIA_RAPIDO_SCREENSHOTS.md** - Checklist de screenshots necessários
+
+### Para Adicionar Mais Screenshots:
+
+Se precisar de capturas adicionais:
+
+1. **Acesse:** https://wokwi.com
+2. **Carregue:** `diagram.json` + `FarmTech.ino`
+3. **Execute simulação** e ajuste sensores
+4. **Capture tela** (Print Screen ou ferramenta)
+5. **Salve neste diretório** com nome descritivo:
+   - `serial_monitor_irrigacao_ligada.png`
+   - `serial_monitor_ph_ajustado.png`
+   - `circuito_rele_ativo.png`
+
+6. **Atualize este README.md** com descrição da nova imagem
+
+---
+
+## ✅ Status dos Screenshots
+
+| Imagem | Status | Descrição | Uso |
+|--------|--------|-----------|-----|
+| `circuito_wokwi.png` | ✅ Disponível | Circuito completo com todos componentes | README principal, apresentação |
+| `serial_monitor_npk_ph.png` | ✅ Disponível | Terminal com NPK-pH v2.0 | README principal, vídeo YouTube |
+
+---
+
+**Grupo 19 FIAP - 1 ano • 2025/2**  
+**Data:** 12/10/2025  
+**Projeto:** FarmTech Solutions - Sistema de Irrigação Inteligente v2.0
+
 
 ## ✅ Checklist de Screenshots Recomendados
 

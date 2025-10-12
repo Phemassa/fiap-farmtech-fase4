@@ -346,12 +346,26 @@ O roteiro detalhado está em: [`docs/ROTEIRO_VIDEO_YOUTUBE.md`](docs/ROTEIRO_VID
 ## 📸 Screenshots
 
 ### Circuito Wokwi Completo
-![Circuito Wokwi](docs/images/wokwi-circuito-completo-ldr.png)
-*Visão geral: ESP32 + 3 botões NPK + LDR + DHT22 + Relé*
+![Circuito Wokwi](docs/images/circuito_wokwi.png)
 
-### Serial Monitor em Execução
-![Serial Monitor](docs/images/wokwi-circuito-completo-dht22.png)
-*Dados em tempo real: temperatura, umidade, pH, NPK e decisão de irrigação*
+**Componentes visíveis:**
+- ⚙️ **ESP32 DevKit v1** - Microcontrolador central
+- 🟢 **3 Botões NPK** - N (Nitrogênio), P (Fósforo), K (Potássio)
+- 💡 **LDR** - Sensor de pH do solo (simulado via luminosidade)
+- 🌡️ **DHT22** - Sensor de temperatura e umidade
+- 🔌 **Relé Módulo** - Controle da bomba de irrigação
+- 🔵 **LED Status** - Indicador visual do sistema
+
+### Serial Monitor - NPK e pH v2.0
+![Serial Monitor NPK-pH](docs/images/serial_monitor_npk_ph.png)
+
+**Dados exibidos:**
+- ✅ **Nitrogênio (N):** OK (botão pressionado)
+- ❌ **Fósforo (P):** BAIXO
+- ❌ **Potássio (K):** BAIXO [crítico para banana]
+- 📊 **Leituras em tempo real** dos sensores
+- 💧 **Decisão de irrigação** baseada nas 6 condições
+- ⚗️ **pH Base + Ajuste NPK** = pH Final (v2.0 feature!)
 
 ---
 
@@ -502,8 +516,12 @@ Cap 1/
     ├── TABELA_LUX_PH_COMPORTAMENTO.md  # Tabela referência
     ├── ROTEIRO_VIDEO_YOUTUBE.md    # Script do vídeo
     ├── GUIA_RAPIDO_SCREENSHOTS.md  # Como tirar prints
+    ├── README.md                   # Documentação da pasta docs
     └── images/
-        ├── wokwi-circuito-completo-ldr.png
+        ├── circuito_wokwi.png          # 📸 Screenshot circuito completo
+        ├── serial_monitor_npk_ph.png   # 📸 Serial Monitor com NPK-pH v2.0
+        ├── COMO_SALVAR_IMAGENS.md      # Guia de screenshots
+        └── README.md                   # Índice de imagens
         └── wokwi-circuito-completo-dht22.png
 ```
 
