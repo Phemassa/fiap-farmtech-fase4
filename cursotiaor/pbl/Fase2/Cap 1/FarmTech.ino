@@ -7,6 +7,12 @@
  * CULTURAS: Milho e Banana
  * PLATAFORMA: ESP32 (Simulação Wokwi.com)
  * 
+ * IDENTIFICAÇÃO DO GRUPO:
+ * Grupo 19 FIAP - 1 ano • 2025/2 - Fase 2 - de 18/09/2025 a 15/10/2025
+ * RM566826 - Phellype Matheus Giacoia Flaibam Massarente
+ * RM567005 - Carlos Alberto Florindo Costato
+ * RM568140 - Cesar Martinho de Azeredo
+ * 
  * COMPONENTES:
  * - 3 Botões Verdes: Simulam sensores NPK (Nitrogênio, Fósforo, Potássio)
  * - LDR: Simula sensor de pH do solo (0-14)
@@ -19,7 +25,6 @@
  * - Liga/desliga irrigação automaticamente
  * - Baseado em dados científicos (EMBRAPA, IAC)
  * 
- * AUTORES: Grupo 59 FIAP
  * DATA: Outubro 2025
  * ═══════════════════════════════════════════════════════════════════════════
  */

@@ -243,12 +243,38 @@ void lerSensores() {
     ldrLux = pow(10, normalizado * 5.0);  // 10^0 a 10^5 = 1 a 100000 lux
   }
   
-  // Conversão LDR → pH (0-4095 para ESP32 ADC 12-bit)
+  // Conversão LDR → pH Base (0-4095 para ESP32 ADC 12-bit)
   // LDR baixo (escuro) = pH alto (alcalino)
   // LDR alto (claro) = pH baixo (ácido)
-  // Fórmula: pH = 9.0 - (ldrValue / 4095.0) * 6.0
+  // Fórmula Base: pH = 9.0 - (ldrValue / 4095.0) * 6.0
   // Resultado: 0-4095 → pH 9.0-3.0
-  phSolo = 9.0 - (ldrValue / 4095.0) * 6.0;
+  float pHBase = 9.0 - (ldrValue / 4095.0) * 6.0;
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // 🧪 AJUSTE DE pH BASEADO EM NPK (Realismo Químico)
+  // ─────────────────────────────────────────────────────────────────────────
+  // Fundamento científico (EMBRAPA):
+  // - Nitrogênio amoniacal (NH₄⁺): Acidifica -0.3 a -0.5
+  // - Fósforo (H₂PO₄⁻): Acidifica -0.2 a -0.4
+  // - Potássio (K⁺): Neutro/leve alcalinização +0.1
+  // ─────────────────────────────────────────────────────────────────────────
+  float ajustePH = 0.0;
+  
+  if (nitrogenioOK) {
+    ajustePH -= 0.4;  // Nitrogênio acidifica
+  }
+  if (fosforoOK) {
+    ajustePH -= 0.3;  // Fósforo acidifica
+  }
+  if (potassioOK) {
+    ajustePH += 0.1;  // Potássio alcaliniza levemente
+  }
+  
+  // pH Final = pH Base (LDR) + Ajustes (NPK)
+  phSolo = pHBase + ajustePH;
+  
+  // Limita pH entre 3.0 e 9.0 (faixa realista de solo agrícola)
+  phSolo = constrain(phSolo, 3.0, 9.0);
   
   // Display detalhado (debug)
   Serial.println("\n📊 [SENSOR LDR/pH]");
@@ -258,11 +284,24 @@ void lerSensores() {
   Serial.print("   📈 ADC Value: ");
   Serial.print(ldrValue);
   Serial.print(" / 4095");
-  Serial.print(" (");
-  Serial.print((ldrValue / 4095.0) * 100.0, 1);
-  Serial.println("%)");
-  Serial.print("   🧪 pH Calculado: ");
-  Serial.print(phSolo, 1);
+  
+  // Exibe cálculo de pH com ajustes NPK
+  Serial.print("   🧪 pH Base (LDR): ");
+  Serial.println(pHBase, 2);
+  
+  if (ajustePH != 0.0) {
+    Serial.print("   ⚗️  Ajuste NPK: ");
+    if (ajustePH > 0) Serial.print("+");
+    Serial.print(ajustePH, 2);
+    Serial.print(" (");
+    if (nitrogenioOK) Serial.print("N↓ ");
+    if (fosforoOK) Serial.print("P↓ ");
+    if (potassioOK) Serial.print("K↑");
+    Serial.println(")");
+  }
+  
+  Serial.print("   🎯 pH Final: ");
+  Serial.print(phSolo, 2);
   
   // Classificação do pH
   if (phSolo < PH_MINIMO) {

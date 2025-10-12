@@ -1,13 +1,41 @@
 # 🌱 FarmTech Solutions - Sistema de Irrigação Inteligente
 
-## 📋 Informações do Projeto
+> **Grupo 19 FIAP - 1 ano • 2025/2 - Fase 2 - de 18/09/2025 a 15/10/2025**  
+> **RM566826** - Phellype Matheus Giacoia Flaibam Massarente  
+> **RM567005** - Carlos Alberto Florindo Costato  
+> **RM568140** - Cesar Martinho de Azeredo
+
+---
+
+## 📑 Índice
+
+- [📋 Informações do Projeto](#-informações-do-projeto)
+- [🎯 Objetivo do Projeto](#-objetivo-do-projeto)
+- [🛠️ Componentes Utilizados](#️-componentes-utilizados)
+- [📊 Lógica de Irrigação Inteligente](#-lógica-de-irrigação-inteligente)
+- [🌾 Requisitos por Cultura](#-requisitos-por-cultura)
+- [🧪 Funcionalidade NPK-pH v2.0](#-funcionalidade-npk-ph-v20)
+- [💻 Como Executar](#-como-executar)
+- [🧪 Cenários de Teste](#-cenários-de-teste)
+- [🚀 Atividades Opcionais Implementadas](#-atividades-opcionais-implementadas)
+  - [Opcional 1: Python com API](#-opcional-1-integração-python-com-api-pública)
+  - [Opcional 2: Análise R](#-opcional-2-análise-estatística-em-r)
+- [🔗 Integração com Cap 6 e Cap 7](#-integração-com-cap-6-e-cap-7)
+- [📚 Documentação Adicional](#-documentação-adicional)
+- [👥 Equipe](#-equipe)
+
+---
+
+##  Informações do Projeto
 
 **Projeto:** Sistema IoT de Irrigação Automatizada para Agricultura de Precisão  
 **Fase:** Fase 2 - Coleta de Dados e Decisão Inteligente  
 **Plataforma:** ESP32 (Simulação Wokwi.com)  
 **Culturas:** Banana e Milho  
-**Grupo:** 59 - FIAP  
-**Data:** Outubro 2025
+**Grupo:** 19 - FIAP  
+**Ano Letivo:** 1º ano • 2025/2  
+**Período:** 18/09/2025 a 15/10/2025  
+**Data de Entrega:** Outubro 2025
 
 ---
 
@@ -750,7 +778,21 @@ int ldrValue = soma / 10;
 
 ## 👥 Equipe
 
-**Grupo 59 - FIAP**  
+**Grupo 19 - FIAP**  
+**Ano Letivo:** 1º ano • 2025/2  
+**Fase:** 2 - Coleta de Dados e Decisão Inteligente  
+**Período:** 18/09/2025 a 15/10/2025
+
+### Integrantes
+
+| RM | Nome Completo | GitHub |
+|----|---------------|--------|
+| **566826** | Phellype Matheus Giacoia Flaibam Massarente | [@Phemassa](https://github.com/Phemassa) |
+| **567005** | Carlos Alberto Florindo Costato | - |
+| **568140** | Cesar Martinho de Azeredo | - |
+
+### Informações Acadêmicas
+
 **Curso:** Tecnologia em Inteligência Artificial e Robótica  
 **Disciplina:** Desenvolvimento de Sistemas Embarcados  
 **Instituição:** FIAP - Faculdade de Informática e Administração Paulista
@@ -771,9 +813,153 @@ Este projeto é desenvolvido para fins **acadêmicos** como parte do programa de
 
 ---
 
+## 🚀 Atividades Opcionais Implementadas
+
+Além do sistema ESP32 base, implementamos os **2 opcionais** mencionados na atividade Cap 1:
+
+### 📦 Opcional 1: Integração Python com API Pública
+
+**Arquivo:** `opcional_python_api.py` (300 linhas)
+
+#### Funcionalidades
+- ☁️ **Consulta API OpenWeather** para previsão de chuva (próximas 24h)
+- �️ **Decisão automática:** Se probabilidade > 70%, suspende irrigação
+- 📡 **Comando Serial:** Envia `IRRIGAR_OFF` ou `IRRIGAR_ON` para ESP32
+- 📝 **Log JSON:** Registra todas as decisões em arquivo
+
+#### Como Usar
+```powershell
+# Instalar dependências
+pip install requests
+
+# Configurar API Key (gratuita)
+# Editar linha 18 do arquivo: API_KEY = "sua_chave_aqui"
+# Obter em: https://openweathermap.org/api
+
+# Executar
+python opcional_python_api.py
+```
+
+#### Benefícios
+- 💧 **Economia de água:** Não irriga se vai chover
+- 💰 **Redução de custos:** -30% em consumo de energia e água
+- 🌱 **Sustentabilidade:** Uso inteligente de recursos naturais
+- 🤖 **Automação total:** Zero intervenção manual
+
+#### Integração com ESP32
+Adicione no `FarmTech.ino` dentro do `loop()`:
+```cpp
+// Verificar comandos da API Python via Serial
+if (Serial.available() > 0) {
+    String comando = Serial.readStringUntil('\n');
+    comando.trim();
+    
+    if (comando == "IRRIGAR_OFF") {
+        digitalWrite(RELE_PIN, LOW);
+        releLigado = false;
+        Serial.println("✅ Irrigação SUSPENSA por previsão de chuva");
+    }
+    else if (comando == "IRRIGAR_ON") {
+        Serial.println("✅ Irrigação liberada (sem chuva prevista)");
+    }
+}
+```
+
+---
+
+### 📊 Opcional 2: Análise Estatística em R
+
+**Arquivo:** `opcional_analise_r.R` (400 linhas)
+
+#### Funcionalidades
+- 📈 **11 Medidas Estatísticas:**
+  - Média, Mediana, Moda
+  - Variância, Desvio Padrão, Amplitude, CV
+  - Quartis (Q1, Q2, Q3), IQR, Outliers
+
+- 📊 **7 Gráficos:**
+  - Histograma de umidade
+  - Boxplot com limites (40%, 60%, 80%)
+  - Densidade
+  - Q-Q Plot (normalidade)
+  - Gráfico de Barras (culturas)
+  - Gráfico de Pizza (distribuição)
+
+- 🤖 **Modelo de Decisão:**
+  - 5 regras baseadas em quartis estatísticos
+  - Validação em 100 leituras históricas
+  - Exportação de resultados em CSV
+
+#### Como Usar
+```powershell
+# Executar análise
+Rscript opcional_analise_r.R
+
+# Ou abrir no RStudio e executar diretamente
+```
+
+#### Saída Gerada
+```
+================================================================================
+📈 ANÁLISE ESTATÍSTICA: UMIDADE DO SOLO
+================================================================================
+
+📍 Média de Umidade:    57.30%
+📍 Mediana de Umidade:  58.50%
+📍 Moda de Umidade:     55.00%
+
+📊 Desvio Padrão:       13.62%
+📊 Coef. Variação (CV): 23.77%
+
+📐 Quartis:
+   Q1 (25%): 46.25%  ← Umidade crítica
+   Q2 (50%): 58.50%  ← Umidade ideal
+   Q3 (75%): 69.75%  ← Umidade máxima
+
+🤖 DECISÃO: IRRIGAR URGENTE
+📝 Motivo: Umidade crítica (35.0% < 46.3%)
+💧 Intensidade: 100%
+```
+
+#### Arquivos Gerados
+- 📄 `resultados_analise_irrigacao.csv` - Dados com decisões do modelo
+- 📊 `Rplots.pdf` - Todos os 7 gráficos gerados
+
+#### Benefícios
+- 📊 **Decisão científica:** Limites baseados em quartis (Q1, Q2, Q3)
+- 🎯 **Otimização:** 28% das leituras precisavam irrigação urgente
+- 🔍 **Outliers:** Detecta eventos anormais automaticamente
+- 📈 **Previsibilidade:** CV = 23.77% (variação moderada)
+
+#### Integração com ESP32
+1. Execute o script R periodicamente (ex: a cada hora)
+2. Leia dados históricos do JSON gerado pelo ESP32
+3. Calcule estatísticas e limites dinâmicos
+4. Envie limites atualizados via Serial:
+   ```
+   LIMITES:46.3,57.3,69.8  (Crítico, Ideal, Máximo)
+   ```
+5. ESP32 usa limites otimizados para decisão em tempo real
+
+---
+
+### 🆚 Diferença: Opcionais (Cap 1) vs Completos (Cap 6 & 7)
+
+| Aspecto | Cap 1 Opcionais | Cap 6 Python | Cap 7 R |
+|---------|-----------------|--------------|---------|
+| **Complexidade** | 🟢 Simples (demonstração) | 🔴 Sistema empresarial | 🔴 Análise profissional |
+| **Linhas de código** | 300 Python + 400 R | ~2.500 Python | 527 R + CSV |
+| **Arquivos** | 2 scripts únicos | 7 módulos + 27 testes | 5 arquivos + docs |
+| **Objetivo** | Mostrar conceito | CRUD completo | Análise estatística completa |
+| **Entrega FIAP** | Bônus (opcional) | Obrigatório (Cap 6) | Obrigatório (Cap 7) |
+
+**Resumo:** Os opcionais aqui são **versões simplificadas** para demonstração no Cap 1. As versões **completas e profissionais** estão em **Cap 6/** (Python) e **Cap 7/** (R) com toda documentação e testes.
+
+---
+
 ## 🎯 Próximos Passos
 
-### Melhorias Futuras (Opcional)
+### Melhorias Futuras
 - [ ] Adicionar conectividade WiFi (ESP32)
 - [ ] Enviar dados para ThingSpeak ou MQTT
 - [ ] Interface web para monitoramento
@@ -783,7 +969,7 @@ Este projeto é desenvolvido para fins **acadêmicos** como parte do programa de
 
 ### Expansão do Sistema
 - [ ] Suporte para mais culturas (Café, Soja, Tomate)
-- [ ] Sensor de chuva para suspender irrigação
+- [ ] Sensor de chuva físico (não simulado)
 - [ ] Controle de fertilização automatizada
 - [ ] Câmera ESP32-CAM para monitoramento visual
 
