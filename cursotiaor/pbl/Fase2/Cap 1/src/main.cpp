@@ -297,25 +297,48 @@ void lerSensores() {
   float pHBase = 9.0 - (ldrValue / 4095.0) * 6.0;
   
   // ─────────────────────────────────────────────────────────────────────────
-  // 🧪 AJUSTE DE pH BASEADO EM NPK (Realismo Químico)
+  // 🧪 AJUSTE DE pH BASEADO EM DOSAGENS NPK REAIS (Realismo Químico v2.0)
   // ─────────────────────────────────────────────────────────────────────────
   // Fundamento científico (EMBRAPA):
-  // - Nitrogênio amoniacal (NH₄⁺): Acidifica -0.3 a -0.5
-  // - Fósforo (H₂PO₄⁻): Acidifica -0.2 a -0.4
-  // - Potássio (K⁺): Neutro/leve alcalinização +0.1
+  // - Nitrogênio amoniacal (NH₄⁺): Acidifica -0.03 pH por g/m²
+  // - Fósforo (H₂PO₄⁻): Acidifica -0.025 pH por g/m²
+  // - Potássio (K⁺): Alcaliniza +0.005 pH por g/m²
+  //
+  // Quando o botão é pressionado = Fertilizante APLICADO no solo
+  // pH ajusta conforme a dosagem específica da cultura selecionada
   // ─────────────────────────────────────────────────────────────────────────
   float ajustePH = 0.0;
+  float dosagem_N = 0.0;
+  float dosagem_P = 0.0;
+  float dosagem_K = 0.0;
   
+  // Determina dosagens baseadas na cultura
+  if (culturaAtual == CULTURA_BANANA) {
+    dosagem_N = BANANA_N;  // 15 g/m²
+    dosagem_P = BANANA_P;  // 10 g/m²
+    dosagem_K = BANANA_K;  // 20 g/m²
+  } else {  // MILHO
+    dosagem_N = MILHO_N;   // 12 g/m²
+    dosagem_P = MILHO_P;   // 8 g/m²
+    dosagem_K = MILHO_K;   // 10 g/m²
+  }
+  
+  // Calcula ajuste proporcional à dosagem aplicada
   if (nitrogenioOK) {
-    ajustePH -= 0.4;  // Nitrogênio acidifica
+    float ajuste_N = dosagem_N * -0.03;  // Ex: 15 g/m² × -0.03 = -0.45 pH
+    ajustePH += ajuste_N;
   }
   if (fosforoOK) {
-    ajustePH -= 0.3;  // Fósforo acidifica
+    float ajuste_P = dosagem_P * -0.025; // Ex: 10 g/m² × -0.025 = -0.25 pH
+    ajustePH += ajuste_P;
   }
   if (potassioOK) {
-    ajustePH += 0.1;  // Potássio alcaliniza levemente
+    float ajuste_K = dosagem_K * 0.005;  // Ex: 20 g/m² × 0.005 = +0.10 pH
+    ajustePH += ajuste_K;
   }
   
+  // pH Final = pH Base (LDR) + Ajustes NPK (dosagem-dependente)
+  phSolo = constrain(pHBase + ajustePH, 3.0, 9.0);
   // pH Final = pH Base (LDR) + Ajustes (NPK)
   phSolo = pHBase + ajustePH;
   
@@ -343,31 +366,87 @@ void lerSensores() {
   Serial.print(NUM_LEITURAS_LDR);
   Serial.println(" leituras)");
   
-  // Exibe cálculo de pH com ajustes NPK
+  // Exibe cálculo de pH com ajustes NPK baseados em dosagem
   Serial.print("   🧪 pH Base (LDR): ");
   Serial.println(pHBase, 2);
   
   if (ajustePH != 0.0) {
-    Serial.print("   ⚗️  Ajuste NPK: ");
+    Serial.print("   ⚗️  Ajuste NPK (dosagem-proporcional): ");
     if (ajustePH > 0) Serial.print("+");
     Serial.print(ajustePH, 2);
-    Serial.print(" (");
-    if (nitrogenioOK) Serial.print("N↓ ");
-    if (fosforoOK) Serial.print("P↓ ");
-    if (potassioOK) Serial.print("K↑");
-    Serial.println(")");
+    Serial.println(" pH");
+    
+    // Determina dosagens para exibir
+    float dose_N = (culturaAtual == CULTURA_BANANA) ? BANANA_N : MILHO_N;
+    float dose_P = (culturaAtual == CULTURA_BANANA) ? BANANA_P : MILHO_P;
+    float dose_K = (culturaAtual == CULTURA_BANANA) ? BANANA_K : MILHO_K;
+    
+    Serial.print("   📦 Fertilizantes aplicados: ");
+    if (nitrogenioOK) {
+      Serial.print("N=");
+      Serial.print(dose_N, 0);
+      Serial.print("g/m² (");
+      Serial.print(dose_N * -0.03, 2);
+      Serial.print(" pH) ");
+    }
+    if (fosforoOK) {
+      Serial.print("P=");
+      Serial.print(dose_P, 0);
+      Serial.print("g/m² (");
+      Serial.print(dose_P * -0.025, 2);
+      Serial.print(" pH) ");
+    }
+    if (potassioOK) {
+      Serial.print("K=");
+      Serial.print(dose_K, 0);
+      Serial.print("g/m² (+");
+      Serial.print(dose_K * 0.005, 2);
+      Serial.print(" pH)");
+    }
+    Serial.println();
   }
   
+  // Exibe pH Final com detalhamento dos ajustes ao lado
   Serial.print("   🎯 pH Final: ");
   Serial.print(phSolo, 2);
   
+  // Mostra influências NPK ao lado do pH Final
+  if (nitrogenioOK || fosforoOK || potassioOK) {
+    Serial.print(" [");
+    
+    // Determina dosagens para cálculo
+    float dose_N = (culturaAtual == CULTURA_BANANA) ? BANANA_N : MILHO_N;
+    float dose_P = (culturaAtual == CULTURA_BANANA) ? BANANA_P : MILHO_P;
+    float dose_K = (culturaAtual == CULTURA_BANANA) ? BANANA_K : MILHO_K;
+    
+    bool primeiro = true;
+    if (nitrogenioOK) {
+      Serial.print("N:");
+      Serial.print(dose_N * -0.03, 2);
+      primeiro = false;
+    }
+    if (fosforoOK) {
+      if (!primeiro) Serial.print(" ");
+      Serial.print("P:");
+      Serial.print(dose_P * -0.025, 2);
+      primeiro = false;
+    }
+    if (potassioOK) {
+      if (!primeiro) Serial.print(" ");
+      Serial.print("K:+");
+      Serial.print(dose_K * 0.005, 2);
+    }
+    Serial.print("]");
+  }
+  Serial.println();
+  
   // Classificação do pH
   if (phSolo < PH_MINIMO) {
-    Serial.println(" → 🟥 ÁCIDO");
+    Serial.println("                    → 🟥 ÁCIDO");
   } else if (phSolo > PH_MAXIMO) {
-    Serial.println(" → 🟦 ALCALINO");
+    Serial.println("                    → 🟦 ALCALINO");
   } else {
-    Serial.println(" → 🟩 NEUTRO (IDEAL)");
+    Serial.println("                    → 🟩 NEUTRO (IDEAL)");
   }
   Serial.println();
   // ─────────────────────────────────────────────────────────────────────────
