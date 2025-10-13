@@ -7,6 +7,12 @@
  * CULTURAS: Milho e Banana
  * PLATAFORMA: ESP32 (Simulação Wokwi.com)
  * 
+ * IDENTIFICAÇÃO DO GRUPO:
+ * Grupo 19 FIAP - 1 ano • 2025/2 - Fase 2 - de 18/09/2025 a 15/10/2025
+ * RM566826 - Phellype Matheus Giacoia Flaibam Massarente
+ * RM567005 - Carlos Alberto Florindo Costato
+ * RM568140 - Cesar Martinho de Azeredo
+ * 
  * COMPONENTES:
  * - 3 Botões Verdes: Simulam sensores NPK (Nitrogênio, Fósforo, Potássio)
  * - LDR: Simula sensor de pH do solo (0-14)
@@ -19,7 +25,6 @@
  * - Liga/desliga irrigação automaticamente
  * - Baseado em dados científicos (EMBRAPA, IAC)
  * 
- * AUTORES: Grupo 59 FIAP
  * DATA: Outubro 2025
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -103,6 +108,15 @@ float umidadeSolo = 0.0;        // DHT22 simula umidade do solo
 float phSolo = 0.0;             // Calculado a partir do LDR
 int ldrValue = 0;
 float ldrLux = 0.0;             // Valor em LUX calculado do LDR
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTRO DE SUAVIZAÇÃO (MÉDIA MÓVEL) - Reduz variações do LDR
+// ═══════════════════════════════════════════════════════════════════════════
+#define NUM_LEITURAS_LDR 5      // Número de leituras para média
+int leituras_ldr[NUM_LEITURAS_LDR] = {0};  // Array circular
+int indice_ldr = 0;             // Índice atual no array
+int soma_ldr = 0;               // Soma das leituras
+bool array_preenchido = false;  // Flag para primeira volta completa
 
 // Estado da irrigação
 bool releLigado = false;
@@ -224,9 +238,28 @@ void lerSensores() {
   potassioOK = !digitalRead(BTN_POTASSIUM);
   
   // ─────────────────────────────────────────────────────────────────────────
-  // 2. Leitura de pH (LDR)
+  // 2. Leitura de pH (LDR) com FILTRO DE SUAVIZAÇÃO
   // ─────────────────────────────────────────────────────────────────────────
-  ldrValue = analogRead(LDR_PIN);
+  
+  // Leitura bruta do LDR
+  int ldrBruto = analogRead(LDR_PIN);
+  
+  // ═══════════════════════════════════════════════════════════════════════
+  // FILTRO DE MÉDIA MÓVEL (reduz ruído/variação)
+  // ═══════════════════════════════════════════════════════════════════════
+  // Remove a leitura mais antiga da soma
+  soma_ldr -= leituras_ldr[indice_ldr];
+  // Adiciona nova leitura
+  leituras_ldr[indice_ldr] = ldrBruto;
+  soma_ldr += ldrBruto;
+  // Avança índice circular
+  indice_ldr = (indice_ldr + 1) % NUM_LEITURAS_LDR;
+  // Marca que completou primeira volta
+  if (indice_ldr == 0) array_preenchido = true;
+  
+  // Calcula média (usa divisor adequado)
+  int divisor = array_preenchido ? NUM_LEITURAS_LDR : max(1, indice_ldr);
+  ldrValue = soma_ldr / divisor;
   
   // Conversão ADC → LUX (aproximação calibrada para Wokwi)
   // Wokwi LDR: 10 lux → ADC ~50, 100000 lux → ADC ~3500 (não chega em 4095)
@@ -277,13 +310,25 @@ void lerSensores() {
   phSolo = constrain(phSolo, 3.0, 9.0);
   
   // Display detalhado (debug)
-  Serial.println("\n📊 [SENSOR LDR/pH]");
+  Serial.println("\n📊 [SENSOR LDR/pH - FILTRADO]");
   Serial.print("   💡 Luminosidade: ");
   Serial.print(ldrLux, 0);
-  Serial.println(" lux");
+  Serial.print(" lux ");
+  // Indica se o filtro já está estável
+  if (array_preenchido) {
+    Serial.println("✅ (estável)");
+  } else {
+    Serial.print("⏳ (estabilizando ");
+    Serial.print(indice_ldr);
+    Serial.print("/");
+    Serial.print(NUM_LEITURAS_LDR);
+    Serial.println(")");
+  }
   Serial.print("   📈 ADC Value: ");
   Serial.print(ldrValue);
-  Serial.print(" / 4095");
+  Serial.print(" / 4095 (média de ");
+  Serial.print(NUM_LEITURAS_LDR);
+  Serial.println(" leituras)");
   
   // Exibe cálculo de pH com ajustes NPK
   Serial.print("   🧪 pH Base (LDR): ");
