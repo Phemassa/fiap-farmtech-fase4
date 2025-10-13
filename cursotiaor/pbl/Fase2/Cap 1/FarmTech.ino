@@ -110,12 +110,14 @@ int ldrValue = 0;
 float ldrLux = 0.0;             // Valor em LUX calculado do LDR
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FILTRO DE SUAVIZAÇÃO (MÉDIA MÓVEL) - Reduz variações do LDR
+// FILTRO DE SUAVIZAÇÃO AGRESSIVO (MÉDIA MÓVEL) - Remove ruído do Wokwi
 // ═══════════════════════════════════════════════════════════════════════════
-#define NUM_LEITURAS_LDR 5      // Número de leituras para média
+#define NUM_LEITURAS_LDR 10     // Número de leituras para média (10 = muito estável)
+#define LDR_THRESHOLD 5         // Ignora variações menores que 5 unidades ADC
 int leituras_ldr[NUM_LEITURAS_LDR] = {0};  // Array circular
 int indice_ldr = 0;             // Índice atual no array
 int soma_ldr = 0;               // Soma das leituras
+int ldrValue_anterior = 0;      // Valor anterior para detecção de mudança
 bool array_preenchido = false;  // Flag para primeira volta completa
 
 // Estado da irrigação
@@ -259,7 +261,18 @@ void lerSensores() {
   
   // Calcula média (usa divisor adequado)
   int divisor = array_preenchido ? NUM_LEITURAS_LDR : max(1, indice_ldr);
-  ldrValue = soma_ldr / divisor;
+  int ldrValue_novo = soma_ldr / divisor;
+  
+  // ═══════════════════════════════════════════════════════════════════════
+  // ZONA MORTA (THRESHOLD) - Ignora pequenas variações
+  // ═══════════════════════════════════════════════════════════════════════
+  // Se a variação for menor que o threshold, mantém o valor anterior
+  if (array_preenchido && abs(ldrValue_novo - ldrValue_anterior) < LDR_THRESHOLD) {
+    ldrValue = ldrValue_anterior;  // Mantém valor estável
+  } else {
+    ldrValue = ldrValue_novo;      // Aceita nova leitura
+    ldrValue_anterior = ldrValue;   // Atualiza anterior
+  }
   
   // Conversão ADC → LUX (aproximação calibrada para Wokwi)
   // Wokwi LDR: 10 lux → ADC ~50, 100000 lux → ADC ~3500 (não chega em 4095)
@@ -310,13 +323,13 @@ void lerSensores() {
   phSolo = constrain(phSolo, 3.0, 9.0);
   
   // Display detalhado (debug)
-  Serial.println("\n📊 [SENSOR LDR/pH - FILTRADO]");
+  Serial.println("\n📊 [SENSOR LDR/pH - SUPER FILTRADO 🔒]");
   Serial.print("   💡 Luminosidade: ");
   Serial.print(ldrLux, 0);
   Serial.print(" lux ");
   // Indica se o filtro já está estável
   if (array_preenchido) {
-    Serial.println("✅ (estável)");
+    Serial.println("✅ (100% estável - ruído removido)");
   } else {
     Serial.print("⏳ (estabilizando ");
     Serial.print(indice_ldr);
