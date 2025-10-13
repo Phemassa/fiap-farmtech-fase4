@@ -685,18 +685,67 @@ void exibirStatus() {
   }
   
   // ─────────────────────────────────────────────────────────────────────────
-  // pH do Solo
+  // pH do Solo com Simulação de Efeito NPK
   // ─────────────────────────────────────────────────────────────────────────
   Serial.println("\n🧪 pH do Solo:");
-  Serial.print("   � Luminosidade: ");
+  Serial.print("   💡 Luminosidade: ");
   Serial.print(ldrLux, 0);
   Serial.println(" lux");
-  Serial.print("   �📊 LDR Value: ");
-  Serial.print(ldrValue);
-  Serial.print(" → pH ");
-  Serial.println(phSolo, 1);
   
-  Serial.print("   📋 Status: ");
+  // Calcula pH base (sem NPK) para comparação
+  float pHBase_display = 9.0 - (ldrValue / 4095.0) * 6.0;
+  
+  Serial.print("   📊 LDR Value: ");
+  Serial.print(ldrValue);
+  Serial.print(" → pH Base: ");
+  Serial.print(pHBase_display, 2);
+  
+  // Se houver fertilizantes aplicados, mostra transformação
+  if (nitrogenioOK || fosforoOK || potassioOK) {
+    Serial.println();
+    Serial.println("   🚜 Após aplicação de fertilizantes:");
+    
+    // Calcula dosagens
+    float dose_N = (culturaAtual == CULTURA_BANANA) ? BANANA_N : MILHO_N;
+    float dose_P = (culturaAtual == CULTURA_BANANA) ? BANANA_P : MILHO_P;
+    float dose_K = (culturaAtual == CULTURA_BANANA) ? BANANA_K : MILHO_K;
+    
+    // Mostra cada nutriente aplicado e seu efeito
+    if (nitrogenioOK) {
+      Serial.print("      🔵 Nitrogênio (");
+      Serial.print(dose_N, 0);
+      Serial.print(" g/m²) → ");
+      Serial.print(dose_N * -0.03, 2);
+      Serial.println(" pH (acidifica)");
+    }
+    if (fosforoOK) {
+      Serial.print("      🟡 Fósforo (");
+      Serial.print(dose_P, 0);
+      Serial.print(" g/m²) → ");
+      Serial.print(dose_P * -0.025, 2);
+      Serial.println(" pH (acidifica)");
+    }
+    if (potassioOK) {
+      Serial.print("      🟢 Potássio (");
+      Serial.print(dose_K, 0);
+      Serial.print(" g/m²) → +");
+      Serial.print(dose_K * 0.005, 2);
+      Serial.println(" pH (alcaliniza)");
+    }
+    
+    Serial.print("   🎯 pH Final: ");
+    Serial.print(phSolo, 2);
+    Serial.print(" (");
+    float variacao = phSolo - pHBase_display;
+    if (variacao > 0) Serial.print("+");
+    Serial.print(variacao, 2);
+    Serial.println(" em relação ao base)");
+  } else {
+    Serial.print(" → pH Final: ");
+    Serial.println(phSolo, 2);
+  }
+  
+  Serial.print("\n   📋 Status: ");
   if (phSolo < PH_MINIMO) {
     Serial.println("🟥 ÁCIDO (< " + String(PH_MINIMO, 1) + ")");
     Serial.println("   💡 Recomendação: Aplicar Fósforo (P) e Potássio (K)");
