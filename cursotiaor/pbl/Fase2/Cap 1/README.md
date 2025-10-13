@@ -338,8 +338,6 @@ pio device monitor --baud 115200
 - Teste com Milho (N-critical)
 - Análise de dados no Serial Monitor
 
-### Roteiro Completo
-O roteiro detalhado está em: [`docs/ROTEIRO_VIDEO_YOUTUBE.md`](docs/ROTEIRO_VIDEO_YOUTUBE.md)
 
 ---
 

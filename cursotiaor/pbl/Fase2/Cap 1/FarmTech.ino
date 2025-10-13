@@ -701,8 +701,8 @@ void exibirStatus() {
   // pH do Solo com Simulação de Efeito NPK
   // ─────────────────────────────────────────────────────────────────────────
   Serial.println("\n🧪 pH do Solo:");
-  Serial.print("   💡 Luminosidade: ");
-  Serial.print(ldrLux, 0);
+  //Serial.print("   💡 Luminosidade: ");
+  //Serial.print(ldrLux, 0);
   Serial.println(" lux");
   
   // Calcula pH base (sem NPK) para comparação

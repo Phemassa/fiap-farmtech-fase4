@@ -68,6 +68,12 @@ class FarmTechApp:
         print("\n" + "─"*60)
         print("📋 MENU PRINCIPAL")
         print("─"*60)
+        print("💡 GUIA RÁPIDO:")
+        print("   • Use 1-2 para cadastrar e visualizar cultivos")
+        print("   • Use 3-5 para monitorar sensores e irrigação")
+        print("   • Use 6 para controlar estoque de insumos")
+        print("   • Use 7-9 para relatórios, export e banco de dados")
+        print("─"*60)
         print("1️⃣  - Cadastrar Cultivo")
         print("2️⃣  - Listar Cultivos")
         print("3️⃣  - Monitorar Sensores (Simular Leitura)")
@@ -85,6 +91,11 @@ class FarmTechApp:
         print("\n" + "="*60)
         print("🌱 CADASTRO DE CULTIVO")
         print("="*60)
+        print("\n💡 INSTRUÇÕES:")
+        print("   → Digite o nome da plantação (ex: 'Plantação Norte', 'Banana Setor A')")
+        print("   → Escolha o tipo de cultura (BANANA, MILHO ou OUTRO)")
+        print("   → Informe área em hectares, data e requisitos NPK")
+        print("─"*60)
         
         try:
             nome = input("\n📝 Nome do cultivo: ").strip()
@@ -96,25 +107,46 @@ class FarmTechApp:
             print("   1 - BANANA (K crítico: 20 g/m²)")
             print("   2 - MILHO (N crítico: 12 g/m²)")
             print("   3 - OUTRO")
-            tipo_opcao = input("Escolha o tipo: ").strip()
+            print("\n💡 DICA: Banana precisa muito Potássio (K), Milho precisa muito Nitrogênio (N)")
+            tipo_opcao = input("Escolha o tipo (1/2/3): ").strip()
             
             tipos_map = {'1': 'BANANA', '2': 'MILHO', '3': 'OUTRO'}
             cultura_tipo = tipos_map.get(tipo_opcao, 'OUTRO')
             
-            area = float(input("\n📏 Área (hectares): "))
+            print("\n💡 ÁREA: Informe em hectares (1 hectare = 10.000 m²)")
+            print("   Exemplos: 2.5 (dois hectares e meio), 10, 0.5")
+            area = float(input("📏 Área (hectares): "))
             if area <= 0:
                 print("❌ Área deve ser maior que zero!")
                 return
             
-            data_plantio = input("\n📅 Data de plantio (YYYY-MM-DD): ").strip()
+            print("\n💡 DATA: Use formato AAAA-MM-DD (Ano-Mês-Dia)")
+            print("   Exemplos: 2025-10-01, 2025-09-15")
+            data_plantio = input("📅 Data de plantio (YYYY-MM-DD): ").strip()
             
             # NPK requisitos
-            print("\n🧪 Requisitos de NPK (g/m²):")
-            nitrogenio = float(input("   Nitrogênio (N): "))
-            fosforo = float(input("   Fósforo (P): "))
-            potassio = float(input("   Potássio (K): "))
+            print("\n" + "─"*60)
+            print("🧪 REQUISITOS DE NPK (g/m²)")
+            print("─"*60)
+            print("💡 VALORES TÍPICOS:")
+            print("   • BANANA → N:10-15  P:8-12  K:15-25 (muito potássio!)")
+            print("   • MILHO  → N:10-15  P:6-10  K:8-12  (muito nitrogênio!)")
+            print("   • Valores maiores = solo precisa de mais daquele nutriente")
+            print("─"*60)
+            nitrogenio = float(input("\n   Nitrogênio (N) g/m²: "))
+            fosforo = float(input("   Fósforo (P) g/m²: "))
+            potassio = float(input("   Potássio (K) g/m²: "))
             
-            ph_ideal = float(input("\n🧪 pH ideal do solo: "))
+            print("\n💡 pH IDEAL: Escala de 0 a 14")
+            print("   • pH < 7 = Ácido  |  pH = 7 = Neutro  |  pH > 7 = Alcalino")
+            print("   • Faixa ótima agricultura: 5.5 a 7.5")
+            print("   • Banana e Milho: pH ideal ≈ 6.0 a 6.5")
+            ph_ideal = float(input("🧪 pH ideal do solo (5.5-7.5): "))
+            
+            print("\n💡 UMIDADE IDEAL: Percentual de água no solo")
+            print("   • 40-60% = Seco (precisa irrigar)")
+            print("   • 60-80% = Ideal (ótimo para crescimento)")
+            print("   • >80% = Encharcado (perigo de apodrecimento)")
             umidade_ideal = float(input("💧 Umidade ideal do solo (%): "))
             
             # Cria cultivo
@@ -162,6 +194,11 @@ class FarmTechApp:
         print("\n" + "="*60)
         print("📊 MONITORAMENTO DE SENSORES")
         print("="*60)
+        print("\n💡 INSTRUÇÕES:")
+        print("   → Selecione um cultivo cadastrado")
+        print("   → Simule valores dos sensores (temperatura, umidade, pH, NPK)")
+        print("   → O sistema registrará a leitura e mostrará análise")
+        print("─"*60)
         
         cultivos = self.cultivo_mgr.listar_cultivos()
         if not cultivos:
@@ -170,20 +207,36 @@ class FarmTechApp:
         
         print("\n📋 Cultivos disponíveis:")
         for c in cultivos:
-            print(f"   {c['id']} - {c['nome']}")
+            print(f"   {c['id']} - {c['nome']} ({c['cultura_tipo']})")
         
         try:
             cultivo_id = int(input("\n🔢 ID do cultivo para monitorar: "))
             
-            print("\n🌡️  Insira os valores dos sensores:")
-            temperatura = float(input("   Temperatura (°C): "))
-            umidade_ar = float(input("   Umidade do ar (%): "))
-            ph = float(input("   pH do solo: "))
+            print("\n" + "─"*60)
+            print("🌡️  VALORES DOS SENSORES")
+            print("─"*60)
+            print("💡 TEMPERATURA: Valores típicos 15°C a 35°C")
+            print("   • <20°C = Frio  |  20-30°C = Ideal  |  >30°C = Quente")
+            temperatura = float(input("\n   Temperatura (°C): "))
             
-            print("\n🧪 Status dos nutrientes (NPK):")
-            n_ok = input("   Nitrogênio adequado? (s/n): ").lower() == 's'
-            p_ok = input("   Fósforo adequado? (s/n): ").lower() == 's'
-            k_ok = input("   Potássio adequado? (s/n): ").lower() == 's'
+            print("\n💡 UMIDADE DO AR: Percentual de umidade atmosférica")
+            print("   • <40% = Ar seco  |  40-70% = Ideal  |  >70% = Ar úmido")
+            umidade_ar = float(input("   Umidade do ar (%): "))
+            
+            print("\n💡 pH DO SOLO: Acidez/Alcalinidade do solo")
+            print("   • 3.0-5.5 = Muito ácido  |  5.5-7.5 = Ideal  |  7.5-9.0 = Alcalino")
+            ph = float(input("   pH do solo (3.0-9.0): "))
+            
+            print("\n" + "─"*60)
+            print("🧪 STATUS DOS NUTRIENTES (NPK)")
+            print("─"*60)
+            print("💡 NUTRIENTES: Responda 's' (sim) se está adequado, 'n' (não) se está baixo")
+            print("   → 's' = Nutriente em quantidade suficiente")
+            print("   → 'n' = Nutriente ABAIXO do necessário (precisa adubar!)")
+            print("─"*60)
+            n_ok = input("\n   Nitrogênio (N) adequado? (s/n): ").lower() == 's'
+            p_ok = input("   Fósforo (P) adequado? (s/n): ").lower() == 's'
+            k_ok = input("   Potássio (K) adequado? (s/n): ").lower() == 's'
             
             # Registra leitura
             leitura_id = self.sensor_mon.adicionar_leitura(
@@ -212,6 +265,16 @@ class FarmTechApp:
         print("\n" + "="*60)
         print("💧 VERIFICAÇÃO DE IRRIGAÇÃO")
         print("="*60)
+        print("\n💡 INSTRUÇÕES:")
+        print("   → Sistema analisa última leitura de sensores")
+        print("   → Verifica 6 condições hierárquicas de decisão:")
+        print("      1. Solo muito seco (<40% umidade)")
+        print("      2. Solo encharcado (>80% umidade) → NUNCA irrigar")
+        print("      3. NPK insuficiente + umidade subótima")
+        print("      4. pH fora da faixa ideal + solo seco")
+        print("      5. Temperatura alta (>30°C) + solo seco")
+        print("      6. Condições ótimas → Irrigação desligada")
+        print("─"*60)
         
         cultivos = self.cultivo_mgr.listar_cultivos()
         if not cultivos:
@@ -220,7 +283,7 @@ class FarmTechApp:
         
         print("\n📋 Cultivos disponíveis:")
         for c in cultivos:
-            print(f"   {c['id']} - {c['nome']}")
+            print(f"   {c['id']} - {c['nome']} ({c['cultura_tipo']})")
         
         try:
             cultivo_id = int(input("\n🔢 ID do cultivo: "))
@@ -275,6 +338,11 @@ class FarmTechApp:
         print("\n" + "="*60)
         print("📜 HISTÓRICO DE IRRIGAÇÕES")
         print("="*60)
+        print("\n💡 INSTRUÇÕES:")
+        print("   → Visualize todas as decisões de irrigação registradas")
+        print("   → Escolha um cultivo específico ou veja todos (ID 0)")
+        print("   → Sistema mostra últimas 10 irrigações")
+        print("─"*60)
         
         cultivos = self.cultivo_mgr.listar_cultivos()
         if not cultivos:
@@ -283,8 +351,8 @@ class FarmTechApp:
         
         print("\n📋 Cultivos disponíveis:")
         for c in cultivos:
-            print(f"   {c['id']} - {c['nome']}")
-        print("   0 - Todos")
+            print(f"   {c['id']} - {c['nome']} ({c['cultura_tipo']})")
+        print("   0 - Todos os cultivos")
         
         try:
             cultivo_id = int(input("\n🔢 ID do cultivo (0 para todos): "))
@@ -314,13 +382,19 @@ class FarmTechApp:
         print("\n" + "="*60)
         print("📦 GERENCIAMENTO DE ESTOQUE")
         print("="*60)
-        print("\n1 - Adicionar produto")
-        print("2 - Listar estoque")
-        print("3 - Registrar aplicação")
-        print("4 - Verificar alertas")
-        print("0 - Voltar")
+        print("\n💡 INSTRUÇÕES:")
+        print("   → Controle insumos agrícolas (fertilizantes, defensivos)")
+        print("   → Adicione produtos, registre aplicações, veja alertas")
+        print("   → Sistema avisa quando estoque está baixo")
+        print("─"*60)
+        print("\n1 - Adicionar produto ao estoque")
+        print("2 - Listar todo o estoque")
+        print("3 - Registrar aplicação (uso) de produto")
+        print("4 - Verificar alertas de estoque baixo")
+        print("0 - Voltar ao menu principal")
+        print("─"*60)
         
-        opcao = input("\nEscolha: ").strip()
+        opcao = input("\nEscolha uma opção (0-4): ").strip()
         
         if opcao == '1':
             self._adicionar_produto_estoque()
@@ -333,14 +407,30 @@ class FarmTechApp:
     
     def _adicionar_produto_estoque(self):
         """Adiciona produto ao estoque"""
+        print("\n" + "─"*60)
+        print("➕ ADICIONAR PRODUTO AO ESTOQUE")
+        print("─"*60)
+        print("💡 INSTRUÇÕES:")
+        print("   → Informe nome, tipo, quantidade e datas")
+        print("   → Tipos: Fertilizante (NPK), Defensivo (pesticida), Sementes, Outro")
+        print("─"*60)
+        
         try:
-            produto = input("\n📝 Nome do produto: ").strip()
-            print("\n📂 Tipo: 1-Fertilizante | 2-Defensivo | 3-Sementes | 4-Outro")
-            tipo_opcao = input("Escolha: ").strip()
+            produto = input("\n📝 Nome do produto (ex: NPK 10-10-10, Ureia, Glifosato): ").strip()
+            
+            print("\n📂 TIPOS DE PRODUTO:")
+            print("   1 - Fertilizante (NPK, ureia, etc)")
+            print("   2 - Defensivo (pesticidas, herbicidas)")
+            print("   3 - Sementes")
+            print("   4 - Outro")
+            tipo_opcao = input("Escolha o tipo (1/2/3/4): ").strip()
             tipos = {'1': 'fertilizante', '2': 'defensivo', '3': 'sementes', '4': 'outro'}
             tipo = tipos.get(tipo_opcao, 'outro')
             
-            quantidade = float(input("\n⚖️  Quantidade (kg ou L): "))
+            print("\n💡 QUANTIDADE: Em kg (sólidos) ou L (líquidos)")
+            quantidade = float(input("⚖️  Quantidade (kg ou L): "))
+            
+            print("\n💡 DATAS: Use formato AAAA-MM-DD")
             data_compra = input("📅 Data de compra (YYYY-MM-DD): ").strip()
             validade = input("📅 Validade (YYYY-MM-DD): ").strip()
             
@@ -367,18 +457,30 @@ class FarmTechApp:
     
     def _registrar_aplicacao(self):
         """Registra aplicação de produto"""
+        print("\n" + "─"*60)
+        print("💊 REGISTRAR APLICAÇÃO DE PRODUTO")
+        print("─"*60)
+        print("💡 INSTRUÇÕES:")
+        print("   → Registre uso de fertilizante/defensivo na plantação")
+        print("   → Sistema deduz quantidade do estoque automaticamente")
+        print("   → Se quantidade for maior que disponível, operação falha")
+        print("─"*60)
+        
         try:
             produtos = self.estoque_mgr.listar_estoque()
             if not produtos:
-                print("\n⚠️  Estoque vazio.")
+                print("\n⚠️  Estoque vazio. Adicione produtos primeiro!")
                 return
             
-            print("\n📦 Produtos disponíveis:")
+            print("\n📦 Produtos disponíveis em estoque:")
             for i, p in enumerate(produtos):
-                print(f"   {i} - {p['produto']} ({p['quantidade_kg']:.2f} kg/L)")
+                print(f"   {i} - {p['produto']} (Disponível: {p['quantidade_kg']:.2f} kg/L)")
             
-            idx = int(input("\n🔢 Índice do produto: "))
-            quantidade = float(input("⚖️  Quantidade aplicada (kg ou L): "))
+            print("\n💡 Escolha o produto pelo número do índice (0, 1, 2...)")
+            idx = int(input("🔢 Índice do produto: "))
+            
+            print("\n💡 Quanto foi aplicado? (em kg ou litros)")
+            quantidade = float(input("⚖️  Quantidade aplicada: "))
             
             self.estoque_mgr.registrar_aplicacao(idx, quantidade)
             print(f"\n✅ Aplicação registrada! Novo saldo: {produtos[idx]['quantidade_kg']:.2f} kg/L")
