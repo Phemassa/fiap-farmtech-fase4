@@ -394,24 +394,42 @@ void lerSensores() {
   
   // Display detalhado (debug)
   Serial.println("\n📊 [SENSOR LDR/pH - SUPER FILTRADO 🔒]");
-  Serial.print("   💡 Luminosidade: ");
+  Serial.print("   💡 Lux = ");
   Serial.print(ldrLux, 0);
-  Serial.print(" lux ");
-  // Indica se o filtro já está estável
-  if (array_preenchido) {
-    Serial.println("✅ (100% estável - ruído removido)");
+  
+  // Classificação da luminosidade
+  if (ldrLux < 100) {
+    Serial.println(" lux → 🌑 ESCURO TOTAL");
+  } else if (ldrLux < 1000) {
+    Serial.println(" lux → 🌘 MUITO ESCURO");
+  } else if (ldrLux < 10000) {
+    Serial.println(" lux → 🌤️ ILUMINAÇÃO NORMAL");
+  } else if (ldrLux < 50000) {
+    Serial.println(" lux → ☀️ MUITO CLARO");
   } else {
-    Serial.print("⏳ (estabilizando ");
+    Serial.println(" lux → 🔆 LUZ SOLAR DIRETA (máx 100.000)");
+  }
+  
+  // Indica se o filtro já está estável
+  Serial.print("   🔒 Filtro: ");
+  if (array_preenchido) {
+    Serial.println("✅ 100% estável (ruído removido)");
+  } else {
+    Serial.print("⏳ Estabilizando ");
     Serial.print(indice_ldr);
     Serial.print("/");
-    Serial.print(NUM_LEITURAS_LDR);
-    Serial.println(")");
+    Serial.println(NUM_LEITURAS_LDR);
   }
-  Serial.print("   📈 ADC Value: ");
+  
+  Serial.println("\n   📐 REGRAS DE CONVERSÃO LDR → pH:");
+  Serial.print("   � ADC Value: ");
   Serial.print(ldrValue);
   Serial.print(" / 4095 (média de ");
   Serial.print(NUM_LEITURAS_LDR);
   Serial.println(" leituras)");
+  Serial.print("   🔄 Fórmula: pH = 9.0 - (");
+  Serial.print(ldrValue);
+  Serial.println(" / 4095) × 6.0");
   
   // Exibe cálculo de pH com ajustes NPK baseados em dosagem
   Serial.print("   🧪 pH Base (LDR): ");
