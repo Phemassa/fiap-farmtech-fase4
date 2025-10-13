@@ -323,18 +323,65 @@ void lerSensores() {
     dosagem_K = MILHO_K;   // 10 g/m²
   }
   
+  // ═══════════════════════════════════════════════════════════════════════
+  // 🌾 SIMULAÇÃO DE APLICAÇÃO DE FERTILIZANTES
+  // ═══════════════════════════════════════════════════════════════════════
+  bool fertilizante_aplicado = false;
+  
   // Calcula ajuste proporcional à dosagem aplicada
   if (nitrogenioOK) {
     float ajuste_N = dosagem_N * -0.03;  // Ex: 15 g/m² × -0.03 = -0.45 pH
     ajustePH += ajuste_N;
+    
+    // Display de aplicação
+    if (!fertilizante_aplicado) {
+      Serial.println("\n🚜💨💨💨 [APLICAÇÃO DE FERTILIZANTES] 💨💨💨🚜");
+      fertilizante_aplicado = true;
+    }
+    Serial.print("   🔵 Aplicando NITROGÊNIO: ");
+    Serial.print(dosagem_N, 0);
+    Serial.print(" g/m² → Efeito: ");
+    Serial.print(ajuste_N, 2);
+    Serial.println(" pH (acidifica solo)");
   }
   if (fosforoOK) {
     float ajuste_P = dosagem_P * -0.025; // Ex: 10 g/m² × -0.025 = -0.25 pH
     ajustePH += ajuste_P;
+    
+    // Display de aplicação
+    if (!fertilizante_aplicado) {
+      Serial.println("\n🚜💨💨💨 [APLICAÇÃO DE FERTILIZANTES] 💨💨💨🚜");
+      fertilizante_aplicado = true;
+    }
+    Serial.print("   🟡 Aplicando FÓSFORO: ");
+    Serial.print(dosagem_P, 0);
+    Serial.print(" g/m² → Efeito: ");
+    Serial.print(ajuste_P, 2);
+    Serial.println(" pH (acidifica solo)");
   }
   if (potassioOK) {
     float ajuste_K = dosagem_K * 0.005;  // Ex: 20 g/m² × 0.005 = +0.10 pH
     ajustePH += ajuste_K;
+    
+    // Display de aplicação
+    if (!fertilizante_aplicado) {
+      Serial.println("\n🚜💨💨💨 [APLICAÇÃO DE FERTILIZANTES] 💨💨💨🚜");
+      fertilizante_aplicado = true;
+    }
+    Serial.print("   🟢 Aplicando POTÁSSIO: ");
+    Serial.print(dosagem_K, 0);
+    Serial.print(" g/m² → Efeito: +");
+    Serial.print(ajuste_K, 2);
+    Serial.println(" pH (alcaliniza solo)");
+  }
+  
+  // Finaliza display de aplicação
+  if (fertilizante_aplicado) {
+    Serial.print("   ✅ Fertilização concluída! Ajuste total: ");
+    if (ajustePH > 0) Serial.print("+");
+    Serial.print(ajustePH, 2);
+    Serial.println(" pH");
+    Serial.println("🚜💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨💨🚜\n");
   }
   
   // pH Final = pH Base (LDR) + Ajustes NPK (dosagem-dependente)
