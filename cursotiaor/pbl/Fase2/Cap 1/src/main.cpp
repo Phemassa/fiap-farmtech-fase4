@@ -274,20 +274,15 @@ void lerSensores() {
     ldrValue_anterior = ldrValue;   // Atualiza anterior
   }
   
-  // Conversão ADC → LUX (aproximação calibrada para Wokwi)
-  // Wokwi LDR: 10 lux → ADC ~50, 100000 lux → ADC ~3500 (não chega em 4095)
-  // Fórmula calibrada baseada em testes no Wokwi:
-  // - ADC 0-50: 0-100 lux (muito escuro)
-  // - ADC 50-1500: 100-5000 lux (normal)
-  // - ADC 1500-3500: 5000-100000 lux (muito claro)
-  // Fórmula exponencial simplificada:
-  if (ldrValue < 50) {
-    ldrLux = ldrValue * 2.0;  // 0-100 lux
-  } else {
-    // Fórmula exponencial: lux = 10^(ADC/1000)
-    float normalizado = ldrValue / 4095.0;
-    ldrLux = pow(10, normalizado * 5.0);  // 10^0 a 10^5 = 1 a 100000 lux
-  }
+  // Conversão ADC → LUX (calibrada para Wokwi Simulator)
+  // ═══════════════════════════════════════════════════════════════════════
+  // CALIBRAÇÃO BASEADA NO EMULADOR WOKWI:
+  // O Wokwi mostra valores reais de LUX ao lado do LDR
+  // Conversão LINEAR para maior precisão:
+  // - ADC máximo: 4095 (12-bit ESP32)
+  // - LUX máximo Wokwi: ~100.000 lux (luz solar direta)
+  // Fórmula LINEAR simples e precisa:
+  ldrLux = (ldrValue / 4095.0) * 100000.0;  // Proporção direta
   
   // Conversão LDR → pH Base (0-4095 para ESP32 ADC 12-bit)
   // LDR baixo (escuro) = pH alto (alcalino)
