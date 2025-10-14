@@ -328,7 +328,7 @@ pio device monitor --baud 115200
 ## 📺 Demonstração em Vídeo
 
 ### Vídeo YouTube (5 minutos)
-**🎥 [Assistir demonstração completa](https://youtu.be/XXXXXXX)**  
+**🎥 [Assistir demonstração completa](https://youtu.be/S1clGKg9PSg)**  
 *(Link será adicionado após gravação - Prazo: 15/10/2025)*
 
 **Conteúdo do vídeo:**
