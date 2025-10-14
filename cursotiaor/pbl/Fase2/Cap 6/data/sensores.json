@@ -14,5 +14,21 @@
       "P": true,
       "K": true
     }
+  },
+  {
+    "id": 2,
+    "cultivo_id": 1,
+    "timestamp": "2025-10-13 21:02:57",
+    "temperatura": 30.0,
+    "temp_status": "ALTA",
+    "umidade_ar": 20.0,
+    "umidade_solo": 16.0,
+    "ph": 5.0,
+    "ph_status": "ÁCIDO",
+    "npk_ok": {
+      "N": false,
+      "P": false,
+      "K": false
+    }
   }
 ]
