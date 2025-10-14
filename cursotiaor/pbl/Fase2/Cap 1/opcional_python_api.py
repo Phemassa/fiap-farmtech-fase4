@@ -17,6 +17,7 @@ import json
 from datetime import datetime
 import sys
 import argparse
+from typing import Optional, Tuple
 
 # ============================================================================
 # CONFIGURAÇÕES
@@ -27,11 +28,15 @@ API_KEY = "SUA_CHAVE_AQUI"  # Substitua por sua chave
 CIDADE = "Campinas"  # Cidade da fazenda
 PAIS = "BR"
 
-# URL da API de previsão (5 dias)
+# URL da API OpenWeather (previsão 5 dias)
 BASE_URL = "http://api.openweathermap.org/data/2.5/forecast"
 
 # Arquivo de logs
 LOG_FILE = 'logs_irrigacao_api.json'
+
+# Endpoints Open-Meteo (open source, sem API key)
+OPEN_METEO_GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search"
+OPEN_METEO_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
 # ============================================================================
 # FUNÇÕES PRINCIPAIS
@@ -91,6 +96,103 @@ def obter_previsao_chuva():
             
     except requests.exceptions.RequestException as e:
         print(f"❌ Erro ao consultar API: {e}")
+        return None
+
+
+def geocodificar_cidade_open_meteo(nome_cidade: str, pais: str) -> Optional[Tuple[float, float, str]]:
+    """Obtém latitude/longitude usando a API de geocodificação do Open-Meteo (OpenStreetMap).
+
+    Returns: (lat, lon, timezone) ou None se falhar.
+    """
+    try:
+        params = {
+            'name': f"{nome_cidade}",
+            'count': 1,
+            'language': 'pt',
+            'format': 'json'
+        }
+        resp = requests.get(OPEN_METEO_GEOCODE_URL, params=params, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        results = data.get('results') or []
+        if not results:
+            return None
+        r0 = results[0]
+        return float(r0['latitude']), float(r0['longitude']), r0.get('timezone', 'auto')
+    except Exception as e:
+        print(f"❌ Erro na geocodificação Open‑Meteo: {e}")
+        return None
+
+
+def obter_previsao_chuva_open_meteo() -> Optional[dict]:
+    """Consulta a API Open‑Meteo (open source) e retorna probabilidade de chuva nas próximas 24h.
+
+    Retorno compatível com o restante do sistema:
+      {
+        'probabilidade': float (0-100),
+        'descricao': str,
+        'temperatura': float,
+        'horario_previsto': str
+      }
+    """
+    geo = geocodificar_cidade_open_meteo(CIDADE, PAIS)
+    if not geo:
+        print("⚠️  Não foi possível geocodificar a cidade para Open‑Meteo.")
+        return None
+    lat, lon, tz = geo
+
+    try:
+        params = {
+            'latitude': lat,
+            'longitude': lon,
+            'hourly': 'precipitation_probability,temperature_2m',
+            'timezone': tz or 'auto'
+        }
+        resp = requests.get(OPEN_METEO_FORECAST_URL, params=params, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+
+        hourly = data.get('hourly') or {}
+        times = hourly.get('time') or []
+        probs = hourly.get('precipitation_probability') or []
+        temps = hourly.get('temperature_2m') or []
+        if not times or not probs:
+            return None
+
+        # Considerar as próximas 24 horas (assumindo série iniciando no horário atual)
+        window = slice(0, min(24, len(probs)))
+        max_p = -1
+        idx = None
+        for i, p in enumerate(probs[window]):
+            if p is not None and p > max_p:
+                max_p = p
+                idx = i
+        if idx is None:
+            return None
+
+        prob = float(max_p)
+        hora = times[window][idx] if hasattr(times, '__getitem__') else times[idx]
+        temp = float(temps[window][idx]) if temps else None
+
+        # Gerar uma descrição simples baseada no limiar
+        if prob >= 70:
+            desc = 'chuva forte provável'
+        elif prob >= 40:
+            desc = 'chuva moderada possível'
+        else:
+            desc = 'baixa probabilidade de chuva'
+
+        return {
+            'probabilidade': prob,
+            'descricao': desc,
+            'temperatura': temp if temp is not None else 0.0,
+            'horario_previsto': hora
+        }
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erro ao consultar Open‑Meteo: {e}")
+        return None
+    except Exception as e:
+        print(f"❌ Erro ao processar Open‑Meteo: {e}")
         return None
     except KeyError as e:
         print(f"❌ Erro ao processar resposta da API: {e}")
@@ -217,6 +319,17 @@ def mostrar_descritivo(opcao: str):
         print("- Saídas do sistema:")
         print("  • Decisão: SUSPENDER / REDUZIR / MANTER irrigação")
         print(f"  • Log: registro salvo em '{LOG_FILE}'")
+    elif opcao == 'open-meteo':
+        print("📘 DESCRITIVO - Modo Real (Open‑Meteo | Open Source)")
+        print("- Requisitos: Internet ativa (sem necessidade de API key)")
+        print("- Parâmetros usados: Cidade (geocodifica para lat/lon), timezone automático")
+        print("- Dados esperados da API (próximas 24h):")
+        print("  • probabilidade: 0–100% (precipitation_probability)")
+        print("  • temperatura: temperatura do ar (°C) no horário de maior probabilidade")
+        print("  • horario_previsto: timestamp ISO do horário com maior probabilidade")
+        print("- Saídas do sistema:")
+        print("  • Decisão: SUSPENDER / REDUZIR / MANTER irrigação")
+        print(f"  • Log: registro salvo em '{LOG_FILE}'")
     elif opcao == 'demo':
         print("📘 DESCRITIVO - Modo Demonstração (Dados Simulados)")
         print("- Não usa internet nem API_KEY")
@@ -267,10 +380,11 @@ def print_menu():
     print("\n" + "=" * 60)
     print("🌾 FarmTech Solutions - Integração API Meteorológica (Menu)")
     print("=" * 60)
-    print("1) Modo Real (API OpenWeather)")
-    print("2) Modo Demonstração (dados simulados)")
-    print("3) Visualizar logs de decisões")
-    print("4) Sair")
+    print("1) Modo Real (Open‑Meteo - open source)")
+    print("2) Modo Real (API OpenWeather)")
+    print("3) Modo Demonstração (dados simulados)")
+    print("4) Visualizar logs de decisões")
+    print("5) Sair")
     print("=" * 60)
 
 
@@ -281,6 +395,19 @@ def executar_modo_api():
         return
     print("🌐 Consultando API OpenWeather...\n")
     previsao = obter_previsao_chuva()
+    if previsao:
+        print("✅ Dados meteorológicos obtidos com sucesso!\n")
+        irrigar = decidir_irrigacao(previsao)
+        enviar_comando_esp32(irrigar)
+        salvar_log_decisao(previsao, irrigar)
+    else:
+        print("❌ Falha ao obter previsão. Mantendo irrigação padrão.")
+
+
+def executar_modo_open_meteo():
+    mostrar_descritivo('open-meteo')
+    print("🌐 Consultando Open‑Meteo (open source)...\n")
+    previsao = obter_previsao_chuva_open_meteo()
     if previsao:
         print("✅ Dados meteorológicos obtidos com sucesso!\n")
         irrigar = decidir_irrigacao(previsao)
@@ -327,7 +454,7 @@ def main():
 
     # Suporte a argumentos de linha de comando (modo, cidade, país)
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument('--mode', choices=['api', 'demo', 'logs'], help='Seleciona o modo de execução')
+    parser.add_argument('--mode', choices=['api', 'openweather', 'open-meteo', 'demo', 'logs'], help='Seleciona o modo de execução')
     parser.add_argument('--city', help='Sobrescreve a cidade do script')
     parser.add_argument('--country', help='Sobrescreve o país do script (ex.: BR)')
     try:
@@ -342,7 +469,9 @@ def main():
         PAIS = args.country
 
     def exec_mode(mode: str):
-        if mode == 'api':
+        if mode in ('open-meteo',):
+            executar_modo_open_meteo()
+        elif mode in ('api', 'openweather'):
             executar_modo_api()
         elif mode == 'demo':
             executar_modo_demo()
@@ -356,21 +485,24 @@ def main():
         # Modo interativo com menu
         while True:
             print_menu()
-            escolha = input("Selecione uma opção (1-4): ").strip()
+            escolha = input("Selecione uma opção (1-5): ").strip()
             if escolha == '1':
-                exec_mode('api')
+                exec_mode('open-meteo')
             elif escolha == '2':
-                exec_mode('demo')
+                exec_mode('api')
             elif escolha == '3':
-                exec_mode('logs')
+                exec_mode('demo')
             elif escolha == '4':
+                exec_mode('logs')
+            elif escolha == '5':
                 break
             else:
                 print("Opção inválida. Tente novamente.")
     else:
         # Fallback não interativo: comportamento original
         if API_KEY == "SUA_CHAVE_AQUI":
-            executar_modo_demo()
+            # Se não houver API key, preferir Open‑Meteo (open source)
+            executar_modo_open_meteo()
         else:
             executar_modo_api()
 
