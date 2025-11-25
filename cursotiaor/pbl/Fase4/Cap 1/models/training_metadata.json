@@ -1,0 +1,15 @@
+{
+  "training_date": "2025-11-25T19:57:31.087735",
+  "data_source": "sensor_data_milho.csv",
+  "n_samples": 1000,
+  "models": [
+    "rendimento_estimado"
+  ],
+  "best_metrics": {
+    "rendimento_estimado": {
+      "test_r2": 0.08116076679633544,
+      "test_mae": 731.3617138658952,
+      "test_rmse": 905.7985593288179
+    }
+  }
+}
